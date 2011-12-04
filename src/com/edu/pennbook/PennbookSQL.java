@@ -192,8 +192,11 @@ public class PennbookSQL {
 	//Returns all of the user's friends
 	public List<Integer> getFriends(int uid) throws SQLException{
 		List<Integer> fids = new LinkedList<Integer>();
-		ResultSet result = executeSelect("");
-
+		ps = conn.prepareStatement("SELECT FId FROM FriendOf WHERE UserId = ?");
+		ps.setInt(1, uid);
+		rs = ps.executeQuery();
+		while(rs.next())
+			fids.add(rs.getInt(1));
 		return fids;
 	}
 	
