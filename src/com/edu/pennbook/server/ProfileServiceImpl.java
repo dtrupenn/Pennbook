@@ -15,12 +15,31 @@
  */
 package com.edu.pennbook.server;
 
+import java.sql.SQLException;
+
+import com.edu.pennbook.PennbookSQL;
 import com.edu.pennbook.client.ProfileService;
 import com.edu.pennbook.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+@SuppressWarnings("serial")
 public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileService {
 
+	/**
+	 * Escape an html string. Escaping data received from the client helps to
+	 * prevent cross-site script vulnerabilities.
+	 * 
+	 * @param html the html string to escape
+	 * @return the escaped string
+	 */
+	private String escapeHtml(String html) {
+		if (html == null) {
+			return null;
+		}
+		return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+				.replaceAll(">", "&gt;");
+	}
+	
 	@Override
 	public String searchFor(String name) throws IllegalArgumentException {
 		// Verify that the input is valid. 
@@ -37,18 +56,24 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		return name; // TODO: fix me to return UID
 	}
 	
-	/**
-	 * Escape an html string. Escaping data received from the client helps to
-	 * prevent cross-site script vulnerabilities.
-	 * 
-	 * @param html the html string to escape
-	 * @return the escaped string
-	 */
-	private String escapeHtml(String html) {
-		if (html == null) {
-			return null;
+	@Override
+	public String attemptLogin(String username, String password) {
+		// TODO
+		return null;
+	}
+	
+	@Override
+	public String attemptRegistration(String fname, String lname,
+			String password, String username, PennbookSQL psql) {
+		
+		// TODO: add error checking...
+		
+		try {
+			psql.addUser(fname, lname, password, username);
+		} catch (SQLException e) {
+			// TODO: cry
 		}
-		return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
-				.replaceAll(">", "&gt;");
+		
+		return null;
 	}
 }
