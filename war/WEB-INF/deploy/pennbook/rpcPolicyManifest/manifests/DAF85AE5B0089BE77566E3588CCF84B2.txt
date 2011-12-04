@@ -1,0 +1,2 @@
+serviceClass: com.edu.pennbook.client.GreetingService
+path: 3CB1E2A5BFBD7AC631533265FE696889.gwt.rpc

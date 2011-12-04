@@ -1,0 +1,2 @@
+serviceClass: com.edu.pennbook.client.ProfileService
+path: A44AA3A9357775366685899D8181EA19.gwt.rpc
