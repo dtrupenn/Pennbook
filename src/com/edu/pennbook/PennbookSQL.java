@@ -56,15 +56,17 @@ public class PennbookSQL {
 	}
 	
 	//ADDS a user to the Users table in the db
-	public void addUser(String fname, String lname, String password, String username) throws SQLException{
+	public int addUser(String fname, String lname, String password, String username) throws SQLException{
+		int newid = getNewUserID();
 		ps = conn.prepareStatement("INSERT INTO Users(UserId, Username, FirstName, LastName, Password) VALUES(?, '?', '?', '?', '?'");
-		ps.setString(1, String.valueOf(getNewUserID()));
+		ps.setString(1, String.valueOf(newid));
 		ps.setString(2, username);
 		ps.setString(3, fname);
 		ps.setString(4, lname);
 		ps.setString(5, password);
 		ps.execute();
 		ps.close();
+		return newid;
 	}
 	
 	//Checks for the largest UserId and increments it by one, else return 0
