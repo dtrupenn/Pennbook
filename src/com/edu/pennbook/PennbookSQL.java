@@ -58,6 +58,15 @@ public class PennbookSQL {
 	//ADDS a user to the Users table in the db
 	public int addUser(String fname, String lname, String password, String username) throws SQLException{
 		int newid = getNewUserID();
+		
+		/*
+		 * Need to add SHA-1 hashing to password
+		 */
+		
+		
+		
+		
+		
 		ps = conn.prepareStatement("INSERT INTO Users(UserId, Username, FirstName, LastName, Password) VALUES(?, '?', '?', '?', '?'");
 		ps.setString(1, String.valueOf(newid));
 		ps.setString(2, username);
@@ -201,36 +210,57 @@ public class PennbookSQL {
 	}
 	
 	//Returns all the user profile's wall posts
-	public List<String> getWallPosts(int uid) throws SQLException{
-		List<String> posts = new LinkedList<String>();
-		ResultSet result = executeSelect("");
-		
+	public List<Integer> getWallPosts(int uid) throws SQLException{
+		List<Integer> posts = new LinkedList<Integer>();
+		ps = conn.prepareStatement("SELECT MID FROM Message WHERE Reciever = ?");
+		ps.setInt(1, uid);
+		rs = ps.executeQuery();
+		while(rs.next())
+			posts.add(rs.getInt(1));
 		return posts;
 	}
 	
 	
 	
+	
+	//Updates user's username *MUST CALL userNameCheck BEFORE BEING USED*
 	public void updateUsername(int uid, String username) throws SQLException{
-		
-	}
-	
-	public void updateFirstName(int uid, String fname) throws SQLException{
-		
-	}
-	
-	public void updateLastName(int uid, String lname) throws SQLException{
-		
-	}
-	
-	public void updateAffiliation(int uid, String aff) throws SQLException{
-		
-	}
-	
-	public void updateBDay(int uid, Date bday) throws SQLException{
-		ps= conn.prepareStatement("");
-		
+		ps = conn.prepareStatement("UPDATE Users SET Username = '?' WHERE UserId = ?");
+		ps.setString(1, username);
+		ps.setString(2, String.valueOf(uid));
 		ps.close();
-		rs.close();
+	}
+	
+	//Updates user's First Name
+	public void updateFirstName(int uid, String fname) throws SQLException{
+		ps = conn.prepareStatement("UPDATE Users SET FirstName = '?' WHERE UserId = ?");
+		ps.setString(1, fname);
+		ps.setString(2, String.valueOf(uid));
+		ps.close();
+	}
+	
+	//Updates user's Last Name
+	public void updateLastName(int uid, String lname) throws SQLException{
+		ps = conn.prepareStatement("UPDATE Users SET LastName = '?' WHERE UserId = ?");
+		ps.setString(1, lname);
+		ps.setString(2, String.valueOf(uid));
+		ps.close();
+	}
+	
+	//Updates user's affiliation
+	public void updateAffiliation(int uid, String aff) throws SQLException{
+		ps = conn.prepareStatement("UPDATE Users SET Affiliation = '?' WHERE UserId = ?");
+		ps.setString(1, aff);
+		ps.setString(2, String.valueOf(uid));
+		ps.close();
+	}
+	
+	//Updates user's birthday
+	public void updateBDay(int uid, Date bday) throws SQLException{
+		ps = conn.prepareStatement("UPDATE Users SET Birthday = '?' WHERE UserId = ?");
+		ps.setDate(1, bday);
+		ps.setString(2, String.valueOf(uid));
+		ps.close();
 	}
 	
 	//Adds a friendship to FriendOf relation
@@ -243,35 +273,85 @@ public class PennbookSQL {
 	}
 	
 	//Posts a message to Message table and Post relation
-	public void postMsg(int uid, int fid, String msg, int mid, Date time) throws SQLException{
+	public int postMsg(int uid, int fid, String msg, Date time) throws SQLException{
+		int m = getNewMsgId();
+		ps = conn.prepareStatement("INSERT INTO Message(MsgID, Sender, Reciever, Msg) VALUES(?, ?, ?, '?')");
+		ps.setString(1, String.valueOf(m));
+		ps.setString(2, String.valueOf(uid));
+		ps.setString(3, String.valueOf(fid));
+		ps.setString(4, msg);
+		ps.execute();
+		ps = conn.prepareStatement("INSERT INTO POST(UserId, MsgId, Dat) VALUES(?, ?, ?)");
+		ps.setString(1, String.valueOf(uid));
+		ps.setString(2, String.valueOf(m));
+		ps.setDate(3, time);
+		ps.execute();
+		
+		
+		
 		//Adds Hashtag if found
 		if(msg.contains("#")){
 			String tag = ""; //Needs some work
-			addTag(getNewTagId(), mid, tag);
+			addTag(m, tag);
 		}
-		ps = conn.prepareStatement("");
+		
+		
 		
 		ps.close();
 		rs.close();
+		return m;
 	}
 	
 	//Adds a tag to Tag table and HasA relation
-	public void addTag(int tid, int mid, String tag) throws SQLException{
-		ps = conn.prepareStatement("");
-		
+	public int addTag(int mid, String tag) throws SQLException{
+		int t = getNewTagId();
+		ps = conn.prepareStatement("INSERT INTO HashTag(MsgID, TagID, Tag) VALUES (?, ?, '?')");
+		ps.setString(1, String.valueOf(mid));
+		ps.setString(2, String.valueOf(t));
+		ps.setString(3, tag);
+		ps.execute();
 		ps.close();
 		rs.close();
+		return t;
 	}
 	
-	public void addInterest(int iid, int uid, String interest) throws SQLException{
-		ps = conn.prepareStatement("");
-		
+	//Adds an Interest to Interest table if not already there AND adds user to FanOf table for interest
+	public int addInterest(int uid, String interest) throws SQLException{
+		int i = getNewInterestId();
+		ps = conn.prepareStatement("SELECT IId FROM Interest WHERE Interest LIKE '?'");
+		ps.setString(1, interest);
+		rs = ps.executeQuery();
+		if(rs.next())
+			i = rs.getInt(1);
+		else
+			execute("INSERT INTO Interest(IId, Interest) VALUES(" + String.valueOf(i) + ",'" + interest +"')");
+		float strength = 1;
+		ps = conn.prepareStatement("SELECT COUNT(IId) FROM FanOf WHERE UserId = ?");
+		ps.setString(1, String.valueOf(uid));
+		rs = ps.executeQuery();
+		if(rs.next()){
+			strength = (float) (1.0/rs.getInt(1));
+			ps = conn.prepareStatement("UPDATE FanOf SET Strenght = ? WHERE UserId = ?");
+			ps.setString(1, String.valueOf(strength));
+			ps.setString(2, String.valueOf(uid));
+		}
+		ps = conn.prepareStatement("INSERT INTO FanOf(UserId, IId, Strength) VALUES(?,?,?)");
+		ps.setString(1, String.valueOf(uid));
+		ps.setString(2, String.valueOf(i));
+		ps.setString(3, String.valueOf(strength));
+		ps.execute();
 		ps.close();
 		rs.close();
+		return i;
 	}
 	
-	public void admire(int uid, int mid) {
-	
+	//Adds an column to the Admire table
+	public void admire(int uid, int mid) throws SQLException {
+		ps = conn.prepareStatement("INSERT INTO Admire(UserId, MsgId) VALUES(?,?)");
+		ps.setString(1, String.valueOf(uid));
+		ps.setString(2, String.valueOf(mid));
+		ps.execute();
+		ps.close();
 	}
 	
 	private void commit(){
