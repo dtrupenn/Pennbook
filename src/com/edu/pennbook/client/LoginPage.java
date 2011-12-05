@@ -3,12 +3,12 @@ package com.edu.pennbook.client;
 import com.edu.pennbook.PennbookSQL;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.PasswordTextBox;
-import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -28,12 +28,12 @@ public class LoginPage extends Composite {
 
 		// LOGIN FUNCTIONALITY ****************************************
 		
+		final Label usernameLabel = new Label();
+		usernameLabel.setText("Username:");
 		final TextBox usernameLoginField = new TextBox();
-		usernameLoginField.setText("Username");
-		usernameLoginField.selectAll();
+		final Label passwordLabel = new Label();
+		passwordLabel.setText("Password:");
 		final PasswordTextBox passwordLoginField = new PasswordTextBox();
-		usernameLoginField.setText("Password");
-		usernameLoginField.selectAll();
 		final Button loginButton = new Button("Login");
 		
 		class loginHandler implements ClickHandler {
@@ -43,11 +43,32 @@ public class LoginPage extends Composite {
 			}
 			
 			private void attemptLogin() {
-				// TODO
+				String loginUsername = usernameLoginField.getText();
+				String loginPassword = passwordLoginField.getText();
+				
+				loginButton.setEnabled(false);
+				
+				profileService.attemptLogin(loginUsername, loginPassword, psql, new AsyncCallback<String>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onSuccess(String result) {
+						// TODO: store the UID, ie result..?
+						// go to homepage for UID
+					}
+					
+				});
 			}
 		}	
 		
+		loginPanel.add(usernameLabel);
 		loginPanel.add(usernameLoginField);
+		loginPanel.add(passwordLabel);
 		loginPanel.add(passwordLoginField);
 		loginPanel.add(loginButton);
 		
@@ -59,5 +80,8 @@ public class LoginPage extends Composite {
 		loginMainPanel.add(registerPanel);
 		
 		// TODO
+		
+		// Add all panels to page...
+		RootPanel.get("mainContainer").add(loginMainPanel);
 	}
 }

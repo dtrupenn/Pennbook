@@ -33,7 +33,7 @@ public class Pennbook implements EntryPoint {
 		try {
 			psql.startup();
 		} catch (Exception e) {
-			// TODO: cry
+			// TODO: cry to Dan because it's his fault
 		}
 		
 		LoginPage loginPage = new LoginPage(profileService, psql);
