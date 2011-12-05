@@ -35,9 +35,9 @@ public interface ProfileService extends RemoteService {
 		}
 	}
 
-	String searchFor(String name) throws IllegalArgumentException;
+	String searchFor(String name, PennbookSQL psql) throws IllegalArgumentException;
 	
-	String attemptLogin(String username, String password);
+	String attemptLogin(String username, String password, PennbookSQL psql);
 
 	String attemptRegistration(String fname, String lname, String password,
 			String username, PennbookSQL psql);

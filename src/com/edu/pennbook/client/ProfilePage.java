@@ -18,9 +18,13 @@ import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ProfilePage extends Composite {
+	
+	PennbookSQL psql;
 
-	public ProfilePage(final ProfileServiceAsync profileService, PennbookSQL psql) {
+	public ProfilePage(final ProfileServiceAsync profileService, PennbookSQL input_psql) {
 
+		psql = input_psql;
+		
 		final VerticalPanel profileMainPanel = new VerticalPanel();
 		final HorizontalPanel searchBarPanel = new HorizontalPanel();
 
@@ -81,10 +85,9 @@ public class ProfilePage extends Composite {
 				// Then, we send the input to the server.
 				searchButton.setEnabled(false);
 
-				profileService.searchFor(textToSearch,
+				profileService.searchFor(textToSearch, psql,
 						new AsyncCallback<String>() {
 					public void onFailure(Throwable caught) {
-						// Show the RPC error message to the user
 						/*dialogBox
 											.setText("Remote Procedure Call - Failure");
 									serverResponseLabel
@@ -115,8 +118,6 @@ public class ProfilePage extends Composite {
 		
 		final Label userTrueName = new Label();
 		userTrueName.setText(""); // TODO
-		
-
 
 		// OTHER STUFF ****************************************
 

@@ -16,6 +16,7 @@
 package com.edu.pennbook.server;
 
 import java.sql.SQLException;
+import java.util.regex.*;
 
 import com.edu.pennbook.PennbookSQL;
 import com.edu.pennbook.client.ProfileService;
@@ -41,7 +42,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	@Override
-	public String searchFor(String name) throws IllegalArgumentException {
+	public String searchFor(String name, PennbookSQL psql) throws IllegalArgumentException {
 		// Verify that the input is valid. 
 		if (!FieldVerifier.isValidName(name)) {
 			// If the input is not valid, throw an IllegalArgumentException back to
@@ -57,23 +58,49 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	@Override
-	public String attemptLogin(String username, String password) {
-		// TODO
-		return null;
+	public String attemptLogin(String username, String password, PennbookSQL psql) {
+
+		int loginUID;
+		loginUID = psql.userCheck(username, password);
+		
+		// if return value is -1, the user does not exist.
+		return String.valueOf(loginUID);
 	}
 	
 	@Override
 	public String attemptRegistration(String fname, String lname,
 			String password, String username, PennbookSQL psql) {
 		
-		// TODO: add error checking...
+		// error checking on inputs
+		
+		// make sure username is in email regex format
+		// case insensitive match to ^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$
+		Pattern emailRegex = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
+		Matcher emailMatch = emailRegex.matcher(username);
+		if(!emailMatch.matches()) return "-2"; // error, username is not a valid email address.
+		
+		// ensure username is not already taken
+		boolean usernameNotTaken; 
+		try {
+			usernameNotTaken = psql.userNameCheck(username);
+		} catch (SQLException e1) {
+			usernameNotTaken = false;
+		}
+		if(!usernameNotTaken) return "-3"; // error, username is already taken.
+		
+		// check password for formatting.. 
+		Pattern passwordRegex = Pattern.compile("^[A-Z0-9]$", Pattern.CASE_INSENSITIVE);
+		Matcher passwordMatch = passwordRegex.matcher(password);
+		if(!passwordMatch.matches()) return "-4"; // error, password may only contain alphanumerics.
+		
+		int newUID = -1;
 		
 		try {
-			psql.addUser(fname, lname, password, username);
-		} catch (SQLException e) {
-			// TODO: cry
+			newUID = psql.addUser(escapeHtml(fname), escapeHtml(lname), password, username);
+		} catch (SQLException e2) {
+			return "-1"; // error, registration failed due to database error. please retry.
 		}
 		
-		return null;
+		return String.valueOf(newUID);
 	}
 }

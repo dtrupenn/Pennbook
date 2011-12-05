@@ -4,10 +4,10 @@ import com.edu.pennbook.PennbookSQL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface ProfileServiceAsync {
-	void searchFor(String input, AsyncCallback<String> callback)
+	void searchFor(String input, PennbookSQL psql, AsyncCallback<String> callback)
 			throws IllegalArgumentException;
 
-	void attemptLogin(String username, String password,
+	void attemptLogin(String username, String password, PennbookSQL psql,
 			AsyncCallback<String> callback);
 	
 	void attemptRegistration(String fname, String lname, String password, String username, 
