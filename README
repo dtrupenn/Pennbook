@@ -12,7 +12,7 @@ Notes:
 username is the email because we are lazy. 
 
 Need to Finish Testing:
-getInterests, getFriends, getWallposts
+getInterests, getFriends, getWallposts, uSearch, tSearch, iSearch
 
 Need to Finish:
-postMsg, addFriend, pwordHashing, userCheck(due to hashing), addUser(due to hashing)
+postMsg, addFriend, pwordHashing, userCheck(due to hashing), addUser(due to hashing), uSearch (string input)

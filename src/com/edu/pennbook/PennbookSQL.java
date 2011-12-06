@@ -362,6 +362,67 @@ public class PennbookSQL {
 		ps.close();
 	}
 	
+	/*
+	 * Searches for user from search String based on FirstName, LastName, and Username and returns
+	 * a list of UserIds. 
+	 */
+	public List<Integer> uSearch(String s) throws SQLException{
+		
+		//Need to into account full name search based on different types of String inputs, etc.
+		
+		List<Integer> results = new LinkedList<Integer>();
+		ps = conn.prepareStatement("SELECT UserId FROM Users WHERE FirstName LIKE ?");
+		ps.setString(1, s + "%");
+		rs = ps.executeQuery();
+		while(rs.next())
+			results.add(rs.getInt(1));
+		ps = conn.prepareStatement("SELECT UserId FROM Users WHERE LastName LIKE ?");
+		ps.setString(1, s + "%");
+		rs = ps.executeQuery();
+		while(rs.next())
+			results.add(rs.getInt(1));
+		ps = conn.prepareStatement("SELECT UserId FROM Users WHERE Username LIKE ?");
+		ps.setString(1, s + "%");
+		rs = ps.executeQuery();
+		while(rs.next())
+			results.add(rs.getInt(1));
+		ps.close();
+		rs.close();
+		return results;
+	}
+	
+	/*
+	 * Searches for Messages from search String based on a Tag and returns
+	 * a list of MsgIDs. 
+	 */
+	public List<Integer> tSearch(String s) throws SQLException{
+		List<Integer> results = new LinkedList<Integer>();
+		ps = conn.prepareStatement("SELECT MsgID FROM HashTag WHERE Tag LIKE ?");
+		ps.setString(1, s + "%");
+		rs = ps.executeQuery();
+		while(rs.next())
+			results.add(rs.getInt(1));
+		ps.close();
+		rs.close();
+		return results;
+	}
+	
+	/*
+	 * Searches for Interests from search String based on an Interes and returns
+	 * a list of IIDs. 
+	 */
+	public List<Integer> iSearch(String s) throws SQLException{
+		List<Integer> results = new LinkedList<Integer>();
+		ps = conn.prepareStatement("SELECT IID FROM Interest WHERE Interest LIKE ?");
+		ps.setString(1, s + "%");
+		rs = ps.executeQuery();
+		while(rs.next())
+			results.add(rs.getInt(1));
+		ps.close();
+		rs.close();
+		return results;
+	}
+	
 	void commit(){
 		try {
 			Statement st = conn.createStatement();
