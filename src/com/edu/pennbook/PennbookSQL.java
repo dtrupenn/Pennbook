@@ -21,7 +21,7 @@ public class PennbookSQL {
 			//This will load the MySQL driver
 			Class.forName("com.mysql.jdbc.Driver");
 			//Setup the connection with the DB
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/feedback?user=PENNBOOK&password=pennbook");			
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/Pennbook?user=PENNBOOK&password=pennbook");			
 		}
 		catch (Exception e){
 			throw e;
