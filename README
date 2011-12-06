@@ -10,3 +10,9 @@ Notes:
 -Create html form for user sign up at Pennbook index.html page to push to Apache Tomcat servlet.
 
 username is the email because we are lazy. 
+
+Need to Finish Testing:
+getInterests, getFriends, getWallposts
+
+Need to Finish:
+postMsg, addFriend, pwordHashing, userCheck(due to hashing), addUser(due to hashing)

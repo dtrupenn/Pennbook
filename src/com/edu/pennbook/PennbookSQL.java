@@ -28,6 +28,10 @@ public class PennbookSQL {
 		}
 	}
 	
+	/*
+	 * Need to check y Result Set is closed once used.
+	 * 
+	 */
 	public ResultSet executeSelect(String query) throws SQLException{
 		ResultSet result = null;
 		statement = conn.createStatement();
@@ -42,19 +46,6 @@ public class PennbookSQL {
 		statement.close();
 	}
 	
-	//Returns password if matching user found through username, else return null.
-	public String pCheck(String uname) throws SQLException{
-		String pword = null;
-		ps = conn.prepareStatement("SELECT Password FROM Users WHERE Email = '?'");
-		ps.setString(1, uname);
-		rs = ps.executeQuery();
-		if(rs.next())
-			pword = rs.getString(1);
-		ps.close();
-		rs.close();
-		return pword;
-	}
-	
 	//ADDS a user to the Users table in the db
 	public int addUser(String fname, String lname, String password, String username) throws SQLException{
 		int newid = getNewUserID();
@@ -67,8 +58,8 @@ public class PennbookSQL {
 		
 		
 		
-		ps = conn.prepareStatement("INSERT INTO Users(UserId, Username, FirstName, LastName, Password) VALUES(?, '?', '?', '?', '?'");
-		ps.setString(1, String.valueOf(newid));
+		ps = conn.prepareStatement("INSERT INTO Users(UserId, Username, FirstName, LastName, Password) VALUES(?, ?, ?, ?, ?");
+		ps.setInt(1, newid);
 		ps.setString(2, username);
 		ps.setString(3, fname);
 		ps.setString(4, lname);
@@ -81,43 +72,55 @@ public class PennbookSQL {
 	//Checks for the largest UserId and increments it by one, else return 0
 	public int getNewUserID() throws SQLException{
 		int id = 0;
-		ResultSet result = executeSelect("SELECT MAX(UserId) FROM Users");
+		statement = conn.createStatement();
+		ResultSet result = statement.executeQuery("SELECT MAX(UserId) FROM Users");
 		if(result.next())
 			id = result.getInt(1) + 1;
+		statement.close();
+		result.close();
 		return id;
 	}
 	
 	//Checks for the largest MsgId and increments it by one, else return 0
 	public int getNewMsgId() throws SQLException{
 		int id = 0;
-		ResultSet result = executeSelect("SELECT MAX(MsgID) FROM Message");
+		statement = conn.createStatement();
+		ResultSet result = statement.executeQuery("SELECT MAX(MsgID) FROM Message");
 		if(result.next())
 			id = result.getInt(1) + 1;
+		statement.close();
+		result.close();
 		return id;
 	}
 	
 	//Check for the largest TagId and increments it by one, else return 0
 	public int getNewTagId() throws SQLException{
 		int id = 0;
-		ResultSet result = executeSelect("SELECT MAX(TagID) FROM HashTag");
+		statement = conn.createStatement();
+		ResultSet result = statement.executeQuery("SELECT MAX(TagID) FROM HashTag");
 		if(result.next())
 			id = result.getInt(1) + 1;
+		statement.close();
+		result.close();
 		return id;
 	}
 	
 	//Check for the largerst IId and increments it by one, else return 0
 	public int getNewInterestId() throws SQLException{
 		int id = 0;
-		ResultSet result = executeSelect("SELECT MAX(IID) FROM Interest");
+		statement = conn.createStatement();
+		ResultSet result = statement.executeQuery("SELECT MAX(IID) FROM Interest");
 		if(result.next())
 			id = result.getInt(1) + 1;
+		statement.close();
+		result.close();
 		return id;
 	}
 	
 	//Returns true if userName is not taken, else returns false
 	public boolean userNameCheck(String username) throws SQLException{
 		boolean check = true;
-		ps = conn.prepareStatement("SELECT UserName FROM Users WHERE Username = '?'");
+		ps = conn.prepareStatement("SELECT UserName FROM Users WHERE Username LIKE ?");
 		ps.setString(1, username);
 		rs = ps.executeQuery();
 		if(rs.next())
@@ -225,41 +228,46 @@ public class PennbookSQL {
 	
 	//Updates user's username *MUST CALL userNameCheck BEFORE BEING USED*
 	public void updateUsername(int uid, String username) throws SQLException{
-		ps = conn.prepareStatement("UPDATE Users SET Username = '?' WHERE UserId = ?");
+		ps = conn.prepareStatement("UPDATE Users SET Username = ? WHERE UserId = ?");
 		ps.setString(1, username);
-		ps.setString(2, String.valueOf(uid));
+		ps.setInt(2, uid);
+		ps.executeUpdate();
 		ps.close();
 	}
 	
 	//Updates user's First Name
 	public void updateFirstName(int uid, String fname) throws SQLException{
-		ps = conn.prepareStatement("UPDATE Users SET FirstName = '?' WHERE UserId = ?");
+		ps = conn.prepareStatement("UPDATE Users SET FirstName = ? WHERE UserId = ?");
 		ps.setString(1, fname);
-		ps.setString(2, String.valueOf(uid));
+		ps.setInt(2, uid);
+		ps.executeUpdate();
 		ps.close();
 	}
 	
 	//Updates user's Last Name
 	public void updateLastName(int uid, String lname) throws SQLException{
-		ps = conn.prepareStatement("UPDATE Users SET LastName = '?' WHERE UserId = ?");
+		ps = conn.prepareStatement("UPDATE Users SET LastName = ? WHERE UserId = ?");
 		ps.setString(1, lname);
-		ps.setString(2, String.valueOf(uid));
+		ps.setInt(2, uid);
+		ps.executeUpdate();
 		ps.close();
 	}
 	
 	//Updates user's affiliation
 	public void updateAffiliation(int uid, String aff) throws SQLException{
-		ps = conn.prepareStatement("UPDATE Users SET Affiliation = '?' WHERE UserId = ?");
+		ps = conn.prepareStatement("UPDATE Users SET Affiliation = ? WHERE UserId = ?");
 		ps.setString(1, aff);
-		ps.setString(2, String.valueOf(uid));
+		ps.setInt(2, uid);
+		ps.executeUpdate();
 		ps.close();
 	}
 	
 	//Updates user's birthday
 	public void updateBDay(int uid, Date bday) throws SQLException{
-		ps = conn.prepareStatement("UPDATE Users SET Birthday = '?' WHERE UserId = ?");
+		ps = conn.prepareStatement("UPDATE Users SET Birthday = ? WHERE UserId = ?");
 		ps.setDate(1, bday);
-		ps.setString(2, String.valueOf(uid));
+		ps.setInt(2, uid);
+		ps.executeUpdate();
 		ps.close();
 	}
 	
@@ -275,15 +283,15 @@ public class PennbookSQL {
 	//Posts a message to Message table and Post relation
 	public int postMsg(int uid, int fid, String msg, Date time) throws SQLException{
 		int m = getNewMsgId();
-		ps = conn.prepareStatement("INSERT INTO Message(MsgID, Sender, Reciever, Msg) VALUES(?, ?, ?, '?')");
-		ps.setString(1, String.valueOf(m));
-		ps.setString(2, String.valueOf(uid));
-		ps.setString(3, String.valueOf(fid));
+		ps = conn.prepareStatement("INSERT INTO Message(MsgID, Sender, Reciever, Msg) VALUES(?, ?, ?, ?)");
+		ps.setInt(1, m);
+		ps.setInt(2, uid);
+		ps.setInt(3, fid);
 		ps.setString(4, msg);
 		ps.execute();
 		ps = conn.prepareStatement("INSERT INTO POST(UserId, MsgId, Dat) VALUES(?, ?, ?)");
-		ps.setString(1, String.valueOf(uid));
-		ps.setString(2, String.valueOf(m));
+		ps.setInt(1, uid);
+		ps.setInt(2, m);
 		ps.setDate(3, time);
 		ps.execute();
 		
@@ -305,9 +313,9 @@ public class PennbookSQL {
 	//Adds a tag to Tag table and HasA relation
 	public int addTag(int mid, String tag) throws SQLException{
 		int t = getNewTagId();
-		ps = conn.prepareStatement("INSERT INTO HashTag(MsgID, TagID, Tag) VALUES (?, ?, '?')");
-		ps.setString(1, String.valueOf(mid));
-		ps.setString(2, String.valueOf(t));
+		ps = conn.prepareStatement("INSERT INTO HashTag(MsgID, TagID, Tag) VALUES (?, ?, ?)");
+		ps.setInt(1, mid);
+		ps.setInt(2, t);
 		ps.setString(3, tag);
 		ps.execute();
 		ps.close();
@@ -318,7 +326,7 @@ public class PennbookSQL {
 	//Adds an Interest to Interest table if not already there AND adds user to FanOf table for interest
 	public int addInterest(int uid, String interest) throws SQLException{
 		int i = getNewInterestId();
-		ps = conn.prepareStatement("SELECT IId FROM Interest WHERE Interest LIKE '?'");
+		ps = conn.prepareStatement("SELECT IId FROM Interest WHERE Interest LIKE ?");
 		ps.setString(1, interest);
 		rs = ps.executeQuery();
 		if(rs.next())
@@ -327,18 +335,18 @@ public class PennbookSQL {
 			execute("INSERT INTO Interest(IId, Interest) VALUES(" + String.valueOf(i) + ",'" + interest +"')");
 		float strength = 1;
 		ps = conn.prepareStatement("SELECT COUNT(IId) FROM FanOf WHERE UserId = ?");
-		ps.setString(1, String.valueOf(uid));
+		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		if(rs.next()){
 			strength = (float) (1.0/rs.getInt(1));
 			ps = conn.prepareStatement("UPDATE FanOf SET Strenght = ? WHERE UserId = ?");
-			ps.setString(1, String.valueOf(strength));
-			ps.setString(2, String.valueOf(uid));
+			ps.setFloat(1, strength);
+			ps.setInt(2, uid);
 		}
 		ps = conn.prepareStatement("INSERT INTO FanOf(UserId, IId, Strength) VALUES(?,?,?)");
-		ps.setString(1, String.valueOf(uid));
-		ps.setString(2, String.valueOf(i));
-		ps.setString(3, String.valueOf(strength));
+		ps.setInt(1, uid);
+		ps.setInt(2, i);
+		ps.setFloat(3, strength);
 		ps.execute();
 		ps.close();
 		rs.close();
@@ -348,13 +356,13 @@ public class PennbookSQL {
 	//Adds an column to the Admire table
 	public void admire(int uid, int mid) throws SQLException {
 		ps = conn.prepareStatement("INSERT INTO Admire(UserId, MsgId) VALUES(?,?)");
-		ps.setString(1, String.valueOf(uid));
-		ps.setString(2, String.valueOf(mid));
+		ps.setInt(1, uid);
+		ps.setInt(2, mid);
 		ps.execute();
 		ps.close();
 	}
 	
-	private void commit(){
+	void commit(){
 		try {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery("commit");
