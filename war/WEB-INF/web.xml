@@ -7,20 +7,6 @@
 
   <!-- Servlets -->
   <servlet>
-    <servlet-name>greetServlet</servlet-name>
-    <servlet-class>com.edu.pennbook.server.GreetingServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/pennbook/greet</url-pattern>
-  </servlet-mapping>
-  
-  <!-- Default page to serve -->
-  <welcome-file-list>
-    <welcome-file>Pennbook.html</welcome-file>
-  </welcome-file-list>
-  <servlet>
   	<servlet-name>ProfileService</servlet-name>
   	<servlet-class>com.edu.pennbook.server.ProfileServiceImpl</servlet-class>
   </servlet>
@@ -28,5 +14,11 @@
   	<servlet-name>ProfileService</servlet-name>
   	<url-pattern>/pennbook/ProfileService</url-pattern>
   </servlet-mapping>
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>Pennbook.html</welcome-file>
+  </welcome-file-list>
+  
 
 </web-app>

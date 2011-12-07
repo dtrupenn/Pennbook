@@ -1,29 +1,13 @@
 package com.edu.pennbook.client;
 
-import com.edu.pennbook.PennbookSQL;
 import com.edu.pennbook.shared.FieldVerifier;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
 
 public class ProfilePage extends Composite {
-	
-	PennbookSQL psql;
 
-	public ProfilePage(final ProfileServiceAsync profileService, PennbookSQL input_psql) {
-
-		psql = input_psql;
+	public ProfilePage(final ProfileServiceAsync profileService) {
 		
 		final VerticalPanel profileMainPanel = new VerticalPanel();
 		final HorizontalPanel searchBarPanel = new HorizontalPanel();
@@ -85,25 +69,13 @@ public class ProfilePage extends Composite {
 				// Then, we send the input to the server.
 				searchButton.setEnabled(false);
 
-				profileService.searchFor(textToSearch, psql,
-						new AsyncCallback<String>() {
+				profileService.searchFor(textToSearch, new AsyncCallback<String>() {
 					public void onFailure(Throwable caught) {
-						/*dialogBox
-											.setText("Remote Procedure Call - Failure");
-									serverResponseLabel
-											.addStyleName("serverResponseLabelError");
-									serverResponseLabel.setHTML(SERVER_ERROR);
-									dialogBox.center();
-									closeButton.setFocus(true);*/
+						// TODO
 					}
 
 					public void onSuccess(String result) {
-						/* dialogBox.setText("Remote Procedure Call");
-									serverResponseLabel
-											.removeStyleName("serverResponseLabelError");
-									serverResponseLabel.setHTML(result);
-									dialogBox.center();
-									closeButton.setFocus(true); */
+						// TODO
 					}
 				});
 			}

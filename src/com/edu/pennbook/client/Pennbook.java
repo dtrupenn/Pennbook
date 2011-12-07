@@ -1,8 +1,11 @@
 package com.edu.pennbook.client;
 
-import com.edu.pennbook.PennbookSQL;
+import com.edu.pennbook.server.PennbookSQL;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -20,8 +23,6 @@ public class Pennbook implements EntryPoint {
 	 */
 	private final ProfileServiceAsync profileService = GWT
 			.create(ProfileService.class);
-	
-	private final PennbookSQL psql = new PennbookSQL();
 
 	/**
 	 * This is the entry point method.
@@ -30,17 +31,30 @@ public class Pennbook implements EntryPoint {
 		// on initial load, show the login page..?
 		// get login info, pass appropriately.
 		
-		try {
-			psql.startup();
-		} catch (Exception e) {
-			// TODO: cry to Dan because it's his fault
-		}
+		// call startUp() method
+		profileService.startUp(new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO
+				System.out.println("NOOOOOO.");
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				if(result.equals("failure")) {
+					// TODO
+					System.out.println("TEARS OF SHAME.");
+				}
+			}
+		});
+			
+		LoginPage loginPage = new LoginPage(profileService);
 		
-		LoginPage loginPage = new LoginPage(profileService, psql);
+		//while(Cookies.getCookie("UID") == null);
 		
+		String currUID = Cookies.getCookie("UID");	
 		// TODO
 		
 		//ProfilePage profilePage = new ProfilePage(profileService, psql);
 	}
-	
 }

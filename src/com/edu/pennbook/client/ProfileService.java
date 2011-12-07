@@ -15,8 +15,9 @@
  */
 package com.edu.pennbook.client;
 
-import com.edu.pennbook.PennbookSQL;
+import com.edu.pennbook.server.PennbookSQL;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -34,11 +35,13 @@ public interface ProfileService extends RemoteService {
 			return instance;
 		}
 	}
-
-	String searchFor(String name, PennbookSQL psql) throws IllegalArgumentException;
 	
-	String attemptLogin(String username, String password, PennbookSQL psql);
+	String startUp();
+
+	String searchFor(String name) throws IllegalArgumentException;
+	
+	String attemptLogin(String username, String password);
 
 	String attemptRegistration(String fname, String lname, String password,
-			String username, PennbookSQL psql);
+			String username);
 }
