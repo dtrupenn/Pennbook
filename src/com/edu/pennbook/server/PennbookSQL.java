@@ -211,7 +211,16 @@ public class PennbookSQL {
 		return posts;
 	}
 
-
+	//Returns TagId if tag exists, else returns -1
+	public int tagCheck(String tag) throws SQLException{
+		int id = -1;
+		ps = conn.prepareStatement("SELECT TAGID FROM HASHTAG WHERE TAG LIKE ?");
+		ps.setString(1, tag);
+		rs = ps.executeQuery();
+		if(rs.next())
+			id = rs.getInt(1);
+		return id;
+	}
 
 
 	//Updates user's username *MUST CALL userNameCheck BEFORE BEING USED*
@@ -319,7 +328,9 @@ public class PennbookSQL {
 
 	//Adds a tag to Tag table and HasA relation
 	public int addTag(int mid, String tag) throws SQLException{
-		int t = getNewTagId();
+		int t = tagCheck(tag);
+		if(t == -1)
+			t = getNewTagId();
 		ps = conn.prepareStatement("INSERT INTO HashTag(MsgID, TagID, Tag) VALUES (?, ?, ?)");
 		ps.setInt(1, mid);
 		ps.setInt(2, t);
@@ -329,6 +340,7 @@ public class PennbookSQL {
 		rs.close();
 		return t;
 	}
+
 
 	//Adds an Interest to Interest table if not already there AND adds user to FanOf table for interest
 	public int addInterest(int uid, String interest) throws SQLException{
