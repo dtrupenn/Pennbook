@@ -201,7 +201,9 @@ public class PennbookSQL {
 		return fids;
 	}
 
-	//Returns all the user profile's wall posts
+	/*
+	 * Returns all the user profile's wall posts
+	 */
 	public List<Integer> getWallPosts(int uid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
 		ps = conn.prepareStatement("SELECT MID FROM Message WHERE SENDER = ? GROUPBY MID");
@@ -212,6 +214,9 @@ public class PennbookSQL {
 		return posts;
 	}
 	
+	/*
+	 * Returns all MIDs that contain tag from tid.
+	 */
 	public List<Integer> getTaggedPosts(int tid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
 		ps = conn.prepareStatement("SELECT FROM HASA WHERE TAGID = ?");
@@ -222,7 +227,9 @@ public class PennbookSQL {
 		return posts;
 	}
 
-	//Returns TagId if tag exists, else returns -1
+	/*
+	 * Returns TagId if tag exists, else returns -1
+	 */
 	public int tagCheck(String tag) throws SQLException{
 		int id = -1;
 		ps = conn.prepareStatement("SELECT TAGID FROM HASHTAG WHERE TAG LIKE ?");
@@ -234,7 +241,9 @@ public class PennbookSQL {
 	}
 
 
-	//Updates user's username *MUST CALL userNameCheck BEFORE BEING USED*
+	/*
+	 * Updates user's username *MUST CALL userNameCheck BEFORE BEING USED*
+	 */
 	public void updateUsername(int uid, String username) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET Username = ? WHERE UserId = ?");
 		ps.setString(1, username);
@@ -243,7 +252,9 @@ public class PennbookSQL {
 		ps.close();
 	}
 
-	//Updates user's First Name
+	/*
+	 * Updates user's First Name
+	 */
 	public void updateFirstName(int uid, String fname) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET FirstName = ? WHERE UserId = ?");
 		ps.setString(1, fname);
@@ -252,7 +263,9 @@ public class PennbookSQL {
 		ps.close();
 	}
 
-	//Updates user's Last Name
+	/*
+	 * Updates user's Last Name
+	 */
 	public void updateLastName(int uid, String lname) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET LastName = ? WHERE UserId = ?");
 		ps.setString(1, lname);
@@ -261,7 +274,9 @@ public class PennbookSQL {
 		ps.close();
 	}
 
-	//Updates user's affiliation
+	/*
+	 * Updates user's affiliation
+	 */
 	public void updateAffiliation(int uid, String aff) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET Affiliation = ? WHERE UserId = ?");
 		ps.setString(1, aff);
@@ -270,7 +285,9 @@ public class PennbookSQL {
 		ps.close();
 	}
 
-	//Updates user's birthday
+	/*
+	 * Updates user's birthday
+	 */
 	public void updateBDay(int uid, Timestamp bday) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET Birthday = ? WHERE UserId = ?");
 		ps.setTimestamp(1, bday);
@@ -279,7 +296,9 @@ public class PennbookSQL {
 		ps.close();
 	}
 
-	//ADDS a user to the Users table in the db
+	/*
+	 * ADDS a user to the Users table in the db
+	 */
 	public int addUser(String fname, String lname, String password, String username) throws SQLException{
 		int newid = getNewUserID();
 		try {
@@ -302,7 +321,9 @@ public class PennbookSQL {
 		return newid;
 	}
 
-	//Adds a friendship to FriendOf relation
+	/*
+	 * Adds a friendship to FriendOf relation
+	 */
 	public void addFriend(int uid, int fid) throws SQLException{
 		ps = conn.prepareStatement("INSERT INTO FRIENDOF(USERID, FID) VALUES(?,?)");
 		ps.setInt(1, uid);
@@ -313,7 +334,9 @@ public class PennbookSQL {
 
 	}
 
-	//Posts a message to Message table and Post relation
+	/*
+	 * Posts a message to Message table and Post relation
+	 */
 	public int postMsg(int uid, int fid, String msg) throws SQLException{
 		int m = getNewMsgId();
 		ps = conn.prepareStatement("INSERT INTO Message(MsgID, Sender, Reciever, Msg) VALUES(?, ?, ?, ?)");
@@ -336,7 +359,9 @@ public class PennbookSQL {
 		return m;
 	}
 
-	//Adds a tag to Tag table and HasA relation
+	/*
+	 * Adds a tag to Tag table and HasA relation
+	 */
 	public int addTag(int mid, String tag) throws SQLException{
 		int t = tagCheck(tag);
 		if(t == -1)
@@ -355,7 +380,9 @@ public class PennbookSQL {
 	}
 
 
-	//Adds an Interest to Interest table if not already there AND adds user to FanOf table for interest
+	/*
+	 * Adds an Interest to Interest table if not already there AND adds user to FanOf table for interest
+	 */
 	public int addInterest(int uid, String interest) throws SQLException{
 		int i = getNewInterestId();
 		ps = conn.prepareStatement("SELECT IId FROM Interest WHERE Interest LIKE ?");
@@ -385,7 +412,9 @@ public class PennbookSQL {
 		return i;
 	}
 
-	//Adds an column to the Admire table
+	/*
+	 * Adds an column to the Admire table
+	 */
 	public void admire(int uid, int mid) throws SQLException {
 		ps = conn.prepareStatement("INSERT INTO Admire(UserId, MsgId) VALUES(?,?)");
 		ps.setInt(1, uid);
@@ -459,6 +488,9 @@ public class PennbookSQL {
 		return results;
 	}
 
+	/*
+	 * Returns a hashed string from the input string, used for password hashing
+	 */
 	public static String SHA1(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException{
 		MessageDigest md;
 		md = MessageDigest.getInstance("SHA-1");
@@ -468,6 +500,9 @@ public class PennbookSQL {
 		return convertToHex(sha1hash);
 	}
 
+	/*
+	 * Converts hex values from SHA-1 to hashed string for SHA1 output
+	 */
 	public static String convertToHex(byte[] data){
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < data.length;i++){
