@@ -294,17 +294,11 @@ public class PennbookSQL {
 		ps.setInt(2, m);
 		ps.setDate(3, time);
 		ps.execute();
-		
-		
-		
-		//Adds Hashtag if found
 		if(msg.contains("#")){
-			String tag = ""; //Needs some work
-			addTag(m, tag);
+			String[] temp = msg.split("#");
+			for(int i = 1; i < temp.length; i++)
+				addTag(m, temp[i].trim());
 		}
-		
-		
-		
 		ps.close();
 		rs.close();
 		return m;
