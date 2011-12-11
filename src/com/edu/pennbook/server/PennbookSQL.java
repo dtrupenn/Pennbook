@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class PennbookSQL {
 	private Connection conn = null;
@@ -27,7 +30,7 @@ public class PennbookSQL {
 			throw e;
 		}
 	}
-	
+
 	/*
 	 * Need to check y Result Set is closed once used.
 	 * 
@@ -39,36 +42,13 @@ public class PennbookSQL {
 		statement.close();
 		return result;
 	}
-	
+
 	public void execute(String query) throws SQLException{
 		statement = conn.createStatement();
 		statement.execute(query);
 		statement.close();
 	}
-	
-	//ADDS a user to the Users table in the db
-	public int addUser(String fname, String lname, String password, String username) throws SQLException{
-		int newid = getNewUserID();
-		
-		/*
-		 * Need to add SHA-1 hashing to password
-		 */
-		
-		
-		
-		
-		
-		ps = conn.prepareStatement("INSERT INTO Users(UserId, Username, FirstName, LastName, Password) VALUES(?, ?, ?, ?, ?");
-		ps.setInt(1, newid);
-		ps.setString(2, username);
-		ps.setString(3, fname);
-		ps.setString(4, lname);
-		ps.setString(5, password);
-		ps.execute();
-		ps.close();
-		return newid;
-	}
-	
+
 	//Checks for the largest UserId and increments it by one, else return 0
 	public int getNewUserID() throws SQLException{
 		int id = 0;
@@ -80,7 +60,7 @@ public class PennbookSQL {
 		result.close();
 		return id;
 	}
-	
+
 	//Checks for the largest MsgId and increments it by one, else return 0
 	public int getNewMsgId() throws SQLException{
 		int id = 0;
@@ -92,7 +72,7 @@ public class PennbookSQL {
 		result.close();
 		return id;
 	}
-	
+
 	//Check for the largest TagId and increments it by one, else return 0
 	public int getNewTagId() throws SQLException{
 		int id = 0;
@@ -104,7 +84,7 @@ public class PennbookSQL {
 		result.close();
 		return id;
 	}
-	
+
 	//Check for the largerst IId and increments it by one, else return 0
 	public int getNewInterestId() throws SQLException{
 		int id = 0;
@@ -116,7 +96,7 @@ public class PennbookSQL {
 		result.close();
 		return id;
 	}
-	
+
 	//Returns true if userName is not taken, else returns false
 	public boolean userNameCheck(String username) throws SQLException{
 		boolean check = true;
@@ -127,17 +107,31 @@ public class PennbookSQL {
 			check = false;
 		return check;
 	}
-	
+
 	//Returns userID if it exists, else returns -1.
-	public int userCheck(String username, String password){
+	public int userCheck(String username, String password) {
 		int id = -1;
-		
-		
-		
-		
+		try {
+			String pword = SHA1(password);
+			ps = conn.prepareStatement("SELECT PASSWORD, USERID FROM USERS WHERE USERNAME LIKE ?");
+			ps.setString(1, username);
+			rs = ps.executeQuery();
+			if(rs.next())
+				if(pword.equals(rs.getString(1)))
+					id = rs.getInt(2);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return id;
 	}
-	
+
 	//Returns the user's First Name if uid exists, null otherwise.
 	public String getFirstName(int uid) throws SQLException{
 		String fname = null;
@@ -150,7 +144,7 @@ public class PennbookSQL {
 		ps.close();
 		return fname;
 	}
-	
+
 	//Returns the user's Last Name if uid exists, null otherwise.
 	public String getLastName(int uid) throws SQLException{
 		String lname = null;
@@ -163,7 +157,7 @@ public class PennbookSQL {
 		ps.close();
 		return lname;
 	}
-	
+
 	//Returns the user's affiliation if uid exists, null otherwise.
 	public String getAffiliation(int uid) throws SQLException{
 		String aff = null;
@@ -176,7 +170,7 @@ public class PennbookSQL {
 		ps.close();
 		return aff;
 	}
-	
+
 	//Returns the user's birthday if uid exists, null otherwise.
 	public Date getBDay(int uid) throws SQLException{
 		Date bday = null;
@@ -189,7 +183,7 @@ public class PennbookSQL {
 		ps.close();
 		return bday;
 	}
-	
+
 	//Returns all of the user's interests
 	public List<Integer> getInterests(int uid) throws SQLException{
 		List<Integer> is= new LinkedList<Integer>();
@@ -200,7 +194,7 @@ public class PennbookSQL {
 			is.add(rs.getInt(1));
 		return is;
 	}
-	
+
 	//Returns all of the user's friends
 	public List<Integer> getFriends(int uid) throws SQLException{
 		List<Integer> fids = new LinkedList<Integer>();
@@ -211,7 +205,7 @@ public class PennbookSQL {
 			fids.add(rs.getInt(1));
 		return fids;
 	}
-	
+
 	//Returns all the user profile's wall posts
 	public List<Integer> getWallPosts(int uid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
@@ -222,10 +216,10 @@ public class PennbookSQL {
 			posts.add(rs.getInt(1));
 		return posts;
 	}
-	
-	
-	
-	
+
+
+
+
 	//Updates user's username *MUST CALL userNameCheck BEFORE BEING USED*
 	public void updateUsername(int uid, String username) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET Username = ? WHERE UserId = ?");
@@ -234,7 +228,7 @@ public class PennbookSQL {
 		ps.executeUpdate();
 		ps.close();
 	}
-	
+
 	//Updates user's First Name
 	public void updateFirstName(int uid, String fname) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET FirstName = ? WHERE UserId = ?");
@@ -243,7 +237,7 @@ public class PennbookSQL {
 		ps.executeUpdate();
 		ps.close();
 	}
-	
+
 	//Updates user's Last Name
 	public void updateLastName(int uid, String lname) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET LastName = ? WHERE UserId = ?");
@@ -252,7 +246,7 @@ public class PennbookSQL {
 		ps.executeUpdate();
 		ps.close();
 	}
-	
+
 	//Updates user's affiliation
 	public void updateAffiliation(int uid, String aff) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET Affiliation = ? WHERE UserId = ?");
@@ -261,7 +255,7 @@ public class PennbookSQL {
 		ps.executeUpdate();
 		ps.close();
 	}
-	
+
 	//Updates user's birthday
 	public void updateBDay(int uid, Date bday) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET Birthday = ? WHERE UserId = ?");
@@ -270,16 +264,39 @@ public class PennbookSQL {
 		ps.executeUpdate();
 		ps.close();
 	}
-	
+
+	//ADDS a user to the Users table in the db
+	public int addUser(String fname, String lname, String password, String username) throws SQLException{
+		int newid = getNewUserID();
+		try {
+			String pword = SHA1(password);
+			ps = conn.prepareStatement("INSERT INTO Users(UserId, Username, FirstName, LastName, Password) VALUES(?, ?, ?, ?, ?");
+			ps.setInt(1, newid);
+			ps.setString(2, username);
+			ps.setString(3, fname);
+			ps.setString(4, lname);
+			ps.setString(5, pword);
+			ps.execute();
+			ps.close();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return newid;
+	}
+
 	//Adds a friendship to FriendOf relation
 	public void addFriend(int uid, int fid, int type) throws SQLException{
 		ps = conn.prepareStatement("");
-		
+
 		ps.close();
 		rs.close();
-		
+
 	}
-	
+
 	//Posts a message to Message table and Post relation
 	public int postMsg(int uid, int fid, String msg, Date time) throws SQLException{
 		int m = getNewMsgId();
@@ -303,7 +320,7 @@ public class PennbookSQL {
 		rs.close();
 		return m;
 	}
-	
+
 	//Adds a tag to Tag table and HasA relation
 	public int addTag(int mid, String tag) throws SQLException{
 		int t = getNewTagId();
@@ -316,7 +333,7 @@ public class PennbookSQL {
 		rs.close();
 		return t;
 	}
-	
+
 	//Adds an Interest to Interest table if not already there AND adds user to FanOf table for interest
 	public int addInterest(int uid, String interest) throws SQLException{
 		int i = getNewInterestId();
@@ -346,7 +363,7 @@ public class PennbookSQL {
 		rs.close();
 		return i;
 	}
-	
+
 	//Adds an column to the Admire table
 	public void admire(int uid, int mid) throws SQLException {
 		ps = conn.prepareStatement("INSERT INTO Admire(UserId, MsgId) VALUES(?,?)");
@@ -355,15 +372,15 @@ public class PennbookSQL {
 		ps.execute();
 		ps.close();
 	}
-	
+
 	/*
 	 * Searches for user from search String based on FirstName, LastName, and Username and returns
 	 * a list of UserIds. 
 	 */
 	public List<Integer> uSearch(String s) throws SQLException{
-		
+
 		//Need to into account full name search based on different types of String inputs, etc.
-		
+
 		List<Integer> results = new LinkedList<Integer>();
 		ps = conn.prepareStatement("SELECT UserId FROM Users WHERE FirstName LIKE ?");
 		ps.setString(1, s + "%");
@@ -384,7 +401,7 @@ public class PennbookSQL {
 		rs.close();
 		return results;
 	}
-	
+
 	/*
 	 * Searches for Messages from search String based on a Tag and returns
 	 * a list of MsgIDs. 
@@ -400,7 +417,7 @@ public class PennbookSQL {
 		rs.close();
 		return results;
 	}
-	
+
 	/*
 	 * Searches for Interests from search String based on an Interes and returns
 	 * a list of IIDs. 
@@ -416,7 +433,34 @@ public class PennbookSQL {
 		rs.close();
 		return results;
 	}
-	
+
+	public static String SHA1(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+		MessageDigest md;
+		md = MessageDigest.getInstance("SHA-1");
+		byte[] sha1hash = new byte[40];
+		md.update(text.getBytes("iso-8859-1"), 0, text.length());
+		sha1hash = md.digest();
+		return convertToHex(sha1hash);
+	}
+
+	public static String convertToHex(byte[] data){
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < data.length;i++){
+			int halfbyte = (data[i] >>> 4) & 0x0F;
+			int two_halfs = 0;
+			do{
+				if((0 <= halfbyte) && (halfbyte <= 9))
+					buf.append((char) ('0' + halfbyte));
+				else
+					buf.append((char)('a' + (halfbyte - 10)));
+				halfbyte = data[i] & 0x0F;
+			}
+			while(two_halfs++ < 1);
+		}
+		return buf.toString();
+	}
+
+
 	void commit(){
 		try {
 			Statement st = conn.createStatement();
@@ -427,7 +471,7 @@ public class PennbookSQL {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void close() {
 		try{
 			if (rs != null)

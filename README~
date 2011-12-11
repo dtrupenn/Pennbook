@@ -3,7 +3,7 @@ To-Do:
 -Set up sql schema DONE
 -Run on mysql local DONE
 -Create Java code to work with specified schema in local mysql repository MEH(ish)
--Create friend recommendations algo, create search algo (can be done kinda easily through sql) (Half Done)
+-Create friend recommendations algo, create search algo (can be done kinda easily through sql) 
 -Learn how to use GWT, Apache Tomcat servlets
 
 Notes:
@@ -12,7 +12,7 @@ Notes:
 username is the email because we are lazy. 
 
 Need to Finish Testing:
-getInterests, getFriends, getWallposts, uSearch, tSearch, iSearch, userCheck, addUser
+getInterests, getFriends, getWallposts, uSearch, tSearch, iSearch
 
 Need to Finish:
-postMsg, addFriend, uSearch (string input)
+postMsg, addFriend, pwordHashing, userCheck(due to hashing), addUser(due to hashing), uSearch (string input)
