@@ -1,17 +1,18 @@
 package com.edu.pennbook.server;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 
 public class PennbookSQL {
 	private Connection conn = null;
@@ -166,13 +167,13 @@ public class PennbookSQL {
 	}
 
 	//Returns the user's birthday if uid exists, null otherwise.
-	public Date getBDay(int uid) throws SQLException{
-		Date bday = null;
+	public Timestamp getBDay(int uid) throws SQLException{
+		Timestamp bday = null;
 		ps = conn.prepareStatement("SELECT Birthday FROM Users WHERE UserId = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		if(rs.next())
-			bday = rs.getDate(1);
+			bday = rs.getTimestamp(1);
 		rs.close();
 		ps.close();
 		return bday;
@@ -203,8 +204,18 @@ public class PennbookSQL {
 	//Returns all the user profile's wall posts
 	public List<Integer> getWallPosts(int uid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT MID FROM Message WHERE Reciever = ?");
+		ps = conn.prepareStatement("SELECT MID FROM Message WHERE SENDER = ? GROUPBY MID");
 		ps.setInt(1, uid);
+		rs = ps.executeQuery();
+		while(rs.next())
+			posts.add(rs.getInt(1));
+		return posts;
+	}
+	
+	public List<Integer> getTaggedPosts(int tid) throws SQLException{
+		List<Integer> posts = new LinkedList<Integer>();
+		ps = conn.prepareStatement("SELECT FROM HASA WHERE TAGID = ?");
+		ps.setInt(1, tid);
 		rs = ps.executeQuery();
 		while(rs.next())
 			posts.add(rs.getInt(1));
@@ -260,9 +271,9 @@ public class PennbookSQL {
 	}
 
 	//Updates user's birthday
-	public void updateBDay(int uid, Date bday) throws SQLException{
+	public void updateBDay(int uid, Timestamp bday) throws SQLException{
 		ps = conn.prepareStatement("UPDATE Users SET Birthday = ? WHERE UserId = ?");
-		ps.setDate(1, bday);
+		ps.setTimestamp(1, bday);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
 		ps.close();
@@ -303,7 +314,7 @@ public class PennbookSQL {
 	}
 
 	//Posts a message to Message table and Post relation
-	public int postMsg(int uid, int fid, String msg, Date time) throws SQLException{
+	public int postMsg(int uid, int fid, String msg) throws SQLException{
 		int m = getNewMsgId();
 		ps = conn.prepareStatement("INSERT INTO Message(MsgID, Sender, Reciever, Msg) VALUES(?, ?, ?, ?)");
 		ps.setInt(1, m);
@@ -311,10 +322,9 @@ public class PennbookSQL {
 		ps.setInt(3, fid);
 		ps.setString(4, msg);
 		ps.execute();
-		ps = conn.prepareStatement("INSERT INTO POST(UserId, MsgId, Dat) VALUES(?, ?, ?)");
+		ps = conn.prepareStatement("INSERT INTO POST(UserId, MsgId) VALUES(?, ?)");
 		ps.setInt(1, uid);
 		ps.setInt(2, m);
-		ps.setDate(3, time);
 		ps.execute();
 		if(msg.contains("#")){
 			String[] temp = msg.split("#");
@@ -331,10 +341,13 @@ public class PennbookSQL {
 		int t = tagCheck(tag);
 		if(t == -1)
 			t = getNewTagId();
-		ps = conn.prepareStatement("INSERT INTO HashTag(MsgID, TagID, Tag) VALUES (?, ?, ?)");
+		ps = conn.prepareStatement("INSERT INTO HashTag(TagID, Tag) VALUES (?, ?)");
+		ps.setInt(1, t);
+		ps.setString(2, tag);
+		ps.execute();
+		ps = conn.prepareStatement("INSERT INTO HASA(MSGID, TAGID) VALUES (?, ?)");
 		ps.setInt(1, mid);
-		ps.setInt(2, t);
-		ps.setString(3, tag);
+		ps.setInt(1, t);
 		ps.execute();
 		ps.close();
 		rs.close();
