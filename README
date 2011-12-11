@@ -11,8 +11,7 @@ Notes:
 
 username is the email because we are lazy. 
 
-Need to Finish Testing:
-getInterests, getFriends, getWallposts, uSearch, tSearch, iSearch, userCheck, addUser
+Do we want friendships to include Strenght & Type or not??
 
-Need to Finish:
-postMsg, addFriend, uSearch (string input)
+Need to Finish Testing:
+getInterests, getFriends, getWallposts, uSearch, tSearch, iSearch, userCheck, addUser, postMsg, addFriend

@@ -32,20 +32,12 @@ public class PennbookSQL {
 	}
 
 	/*
-	 * Need to check y Result Set is closed once used.
-	 * 
+	 * Executes query provided in parameters
 	 */
-	public ResultSet executeSelect(String query) throws SQLException{
-		ResultSet result = null;
-		statement = conn.createStatement();
-		result = statement.executeQuery(query);
-		statement.close();
-		return result;
-	}
-
 	public void execute(String query) throws SQLException{
 		statement = conn.createStatement();
 		statement.execute(query);
+		//Closes off statement after being used
 		statement.close();
 	}
 
@@ -53,6 +45,7 @@ public class PennbookSQL {
 	public int getNewUserID() throws SQLException{
 		int id = 0;
 		statement = conn.createStatement();
+		//Query returns max UserId value
 		ResultSet result = statement.executeQuery("SELECT MAX(UserId) FROM Users");
 		if(result.next())
 			id = result.getInt(1) + 1;
@@ -65,6 +58,7 @@ public class PennbookSQL {
 	public int getNewMsgId() throws SQLException{
 		int id = 0;
 		statement = conn.createStatement();
+		//Query retunrs max UserId value
 		ResultSet result = statement.executeQuery("SELECT MAX(MsgID) FROM Message");
 		if(result.next())
 			id = result.getInt(1) + 1;
@@ -289,9 +283,11 @@ public class PennbookSQL {
 	}
 
 	//Adds a friendship to FriendOf relation
-	public void addFriend(int uid, int fid, int type) throws SQLException{
-		ps = conn.prepareStatement("");
-
+	public void addFriend(int uid, int fid) throws SQLException{
+		ps = conn.prepareStatement("INSERT INTO FRIENDOF(USERID, FID) VALUES(?,?)");
+		ps.setInt(1, uid);
+		ps.setInt(2, fid);
+		ps.execute();
 		ps.close();
 		rs.close();
 
@@ -378,25 +374,29 @@ public class PennbookSQL {
 	 * a list of UserIds. 
 	 */
 	public List<Integer> uSearch(String s) throws SQLException{
-
-		//Need to into account full name search based on different types of String inputs, etc.
-
+		
+		String[] temp = s.split(" ");
 		List<Integer> results = new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT UserId FROM Users WHERE FirstName LIKE ?");
-		ps.setString(1, s + "%");
-		rs = ps.executeQuery();
-		while(rs.next())
-			results.add(rs.getInt(1));
-		ps = conn.prepareStatement("SELECT UserId FROM Users WHERE LastName LIKE ?");
-		ps.setString(1, s + "%");
-		rs = ps.executeQuery();
-		while(rs.next())
-			results.add(rs.getInt(1));
-		ps = conn.prepareStatement("SELECT UserId FROM Users WHERE Username LIKE ?");
-		ps.setString(1, s + "%");
-		rs = ps.executeQuery();
-		while(rs.next())
-			results.add(rs.getInt(1));
+		for(String t: temp){
+			ps = conn.prepareStatement("SELECT UserId FROM Users WHERE FirstName LIKE ?");
+			ps.setString(1, t + "%");
+			rs = ps.executeQuery();
+			while(rs.next())
+				if(!results.contains(rs.getInt(1)))
+					results.add(rs.getInt(1));
+			ps = conn.prepareStatement("SELECT UserId FROM Users WHERE LastName LIKE ?");
+			ps.setString(1, t + "%");
+			rs = ps.executeQuery();
+			while(rs.next())
+				if(!results.contains(rs.getInt(1)))
+					results.add(rs.getInt(1));
+			ps = conn.prepareStatement("SELECT UserId FROM Users WHERE Username LIKE ?");
+			ps.setString(1, t + "%");
+			rs = ps.executeQuery();
+			while(rs.next())
+				if(!results.contains(rs.getInt(1)))
+					results.add(rs.getInt(1));	
+		}
 		ps.close();
 		rs.close();
 		return results;
