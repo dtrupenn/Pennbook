@@ -35,31 +35,27 @@ public class Pennbook implements EntryPoint {
 		profileService.startUp(new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO
 				System.out.println("NOOOOOO.");
 			}
 
 			@Override
 			public void onSuccess(String result) {
 				if(result.equals("failure")) {
-					// TODO
 					System.out.println("TEARS OF SHAME.");
 				}
 			}
 		});
-			
-		LoginPage loginPage = new LoginPage(profileService);
-		ProfilePage profilePage = new ProfilePage(profileService);
+		
+		RootPanel.get("mainContainer").add(ContentPanel.getInstance());	
+		// RootPanel.get("topbarContainer").add(TopPanel.getInstance());
 		
 		String currUID = Cookies.getCookie("UID");	
 		if (currUID == null) {
-			RootPanel.get("mainContainer").add(loginPage.getLoginMainPanel());	
+			ContentPanel.replaceContent(new LoginPage(profileService));
 		} else {
-			// Add all panels to page...
-			RootPanel.get("topbarContainer").add(profilePage.getSearchBarPanel());
-			//RootPanel.get("mainContainer").add(profileMainPanel);
+			// RootPanel.get("topbarContainer").add(profilePage.getSearchBarPanel());
+			ContentPanel.replaceContent(new ProfilePage(profileService));
 		}
-		
 		// TODO
 	}
 }

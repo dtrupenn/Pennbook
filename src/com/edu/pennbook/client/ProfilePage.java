@@ -90,19 +90,15 @@ public class ProfilePage extends Composite {
 		searchButton.addClickHandler(sHandler);
 		searchField.addKeyUpHandler(sHandler);
 
+		profileMainPanel.add(searchBarPanel);
+		
 		// PROFILE INFO FUNCTIONALITY ****************************************
 		
 		String userID = Cookies.getCookie("UID");
 		
 		final Label userTrueName = new Label();
 		userTrueName.setText(""); // TODO
-	}
-	
-	public VerticalPanel getProfileMainPanel() {
-		return profileMainPanel;
-	}
-	
-	public HorizontalPanel getSearchBarPanel() {
-		return searchBarPanel;
+		
+		initWidget(profileMainPanel);
 	}
 }

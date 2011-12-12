@@ -104,7 +104,7 @@ public class LoginPage extends Composite {
 				
 				regiButton.setEnabled(false);
 				
-				profileService.attemptRegistration(rFirstname, rLastname, rUsername, rPassword, new AsyncCallback<String>() {
+				profileService.attemptRegistration(rFirstname, rLastname, rPassword, rUsername, new AsyncCallback<String>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -113,7 +113,6 @@ public class LoginPage extends Composite {
 
 					@Override
 					public void onSuccess(String result) {
-						
 						if (result.equals("-1")) {
 							// TODO: dialog box..?
 						} else if (result.equals("-2")) {
@@ -122,10 +121,10 @@ public class LoginPage extends Composite {
 							// TODO: dialog box..?
 						} else if (result.equals("-4")) {
 							// TODO: dialog box..?
+						} else {
+							// store the UID, ie result..?
+							Cookies.setCookie("UID", result);
 						}
-						
-						// store the UID, ie result..?
-						Cookies.setCookie("UID", result);
 					}
 					
 				});
@@ -149,9 +148,7 @@ public class LoginPage extends Composite {
 		
 		loginMainPanel.add(loginPanel);
 		loginMainPanel.add(registerPanel);
-	}
-	
-	public HorizontalPanel getLoginMainPanel() {
-		return loginMainPanel;
+		
+		initWidget(loginMainPanel);
 	}
 }

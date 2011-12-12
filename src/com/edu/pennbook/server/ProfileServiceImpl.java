@@ -112,6 +112,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		try {
 			newUID = psql.addUser(escapeHtml(fname), escapeHtml(lname), password, username);
 		} catch (SQLException e2) {
+			e2.printStackTrace();
 			return "-1"; // error, registration failed due to database error. please retry.
 		}
 
@@ -126,15 +127,17 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 			userAttributes = psql.getFirstName(UID);
 			userAttributes = userAttributes + "," + psql.getLastName(UID);
 			userAttributes = userAttributes + "," + psql.getAffiliation(UID);
-			//Timestamp birthday = psql.getBDay(UID); 
-			//DateFormat.
-			userAttributes = userAttributes + "," + " "; // TODO
+			Timestamp birthday = psql.getBDay(UID); 
+			String[] part1 = birthday.toString().split(" ");
+			String[] part2 = part1[0].split("-"); // format: yyyy, mm, dd
+			userAttributes = userAttributes + "," + part2[2] + "/" + part2[1] + "/" + part2[0]; // TODO
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return userAttributes;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public String changeUserAttributes(String userID, String fname, String lname,
 			String affiliation, String birthday) {
 		int UID = Integer.valueOf(userID);
@@ -148,9 +151,11 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 			String currAff = psql.getAffiliation(UID);
 			if (!currAff.equals(affiliation))
 				psql.updateAffiliation(UID, affiliation);
-			//Timestamp currBday = psql.getBDay(UID);
-			//Timestamp bday = new Timestamp(); // TODO
-			//psql.updateBDay(UID, bday);
+			Timestamp currBday = psql.getBDay(UID);
+			String[] parts = birthday.split("/");
+			Timestamp bday = new Timestamp(Integer.valueOf(parts[2]), Integer.valueOf(parts[1]), Integer.valueOf(parts[0]), 0, 0, 0, 0);
+			if(!currBday.toString().equals(bday.toString()))
+				psql.updateBDay(UID, bday);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

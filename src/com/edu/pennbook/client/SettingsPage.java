@@ -6,7 +6,7 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 
-public class SettingsPage {
+public class SettingsPage extends Composite {
 	
 	final private VerticalPanel settingsMainPanel;
 
@@ -56,7 +56,7 @@ public class SettingsPage {
 				String fname = firstNameBox.getText();
 				String lname = lastNameBox.getText();
 				String aff = affiliationBox.getText();
-				String bday = birthdayBox.getText();
+				String bday = birthdayBox.getText(); // make sure this is date/month/year format... drop downs?
 				profileService.changeUserAttributes(userID, fname, lname, aff, bday, new AsyncCallback<String>() {
 					@Override
 					public void onFailure(Throwable caught) {
@@ -65,7 +65,8 @@ public class SettingsPage {
 
 					@Override
 					public void onSuccess(String result) {
-						// TODO Auto-generated method stub
+						if(!result.equals("Success"))
+							;// Dialog box?
 					}
 				});
 			}
@@ -83,10 +84,7 @@ public class SettingsPage {
 		settingsMainPanel.add(birthdayLabel);
 		settingsMainPanel.add(birthdayBox);
 		settingsMainPanel.add(submitChanges);
+		
+		initWidget(settingsMainPanel);
 	}
-	
-	public VerticalPanel getSettingsMainPanel() {
-		return settingsMainPanel;
-	}
-	
 }
