@@ -163,4 +163,15 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		}
 		return "Success";
 	}
+	
+	public String getUsernameFromUID(String userID) {
+		int UID = Integer.valueOf(userID);
+		String email = "";
+		try {
+			email = psql.getUsername(UID);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return email;
+	}
 }

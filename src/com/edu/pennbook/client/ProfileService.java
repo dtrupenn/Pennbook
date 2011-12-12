@@ -47,4 +47,6 @@ public interface ProfileService extends RemoteService {
 	
 	String changeUserAttributes(String userID, String fname, String lname,
 			String affiliation, String birthday);
+	
+	String getUsernameFromUID(String userID);
 }

@@ -193,7 +193,7 @@ public class PennbookSQL {
 	//Returns all of the user's interests
 	public String getUsername(int uid) throws SQLException{
 		String un = null;
-		ps = conn.prepareStatement("SELECT USERNAME FROM FanOf WHERE UserId = ?");
+		ps = conn.prepareStatement("SELECT USERNAME FROM Users WHERE UserId = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		while(rs.next())

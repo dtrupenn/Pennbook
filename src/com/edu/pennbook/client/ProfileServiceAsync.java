@@ -17,4 +17,6 @@ public interface ProfileServiceAsync {
 	
 	void changeUserAttributes(String userID, String fname, String lname,
 			String affiliation, String birthday, AsyncCallback<String> callback);
+	
+	void getUsernameFromUID(String userID, AsyncCallback<String> callback);
 }

@@ -38,9 +38,21 @@ public class ProfilePage extends Composite {
 			}
 		});
 		
+		profileService.getUsernameFromUID(userID, new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				userEmailAddress.setText(result);
+			}
+		});
+		
 		userInfoPanel.add(userTrueName);
-		userInfoPanel.add(userInfo);
 		userInfoPanel.add(userEmailAddress);
+		userInfoPanel.add(userInfo);
 		
 		profileMainPanel.add(userInfoPanel);
 		
