@@ -103,9 +103,9 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		if(!usernameNotTaken) return "-3"; // error, username is already taken.
 
 		// check password for formatting.. 
-		Pattern passwordRegex = Pattern.compile("[A-Za-z0-9]");
-		Matcher passwordMatch = passwordRegex.matcher(password);
-		if(!passwordMatch.matches()) return "-4"; // error, password may only contain alphanumerics.
+		//Pattern passwordRegex = Pattern.compile("[A-Za-z0-9]");
+		//Matcher passwordMatch = passwordRegex.matcher(password);
+		//if(!passwordMatch.matches()) return "-4"; // error, password may only contain alphanumerics.
 
 		int newUID = -1;
 
