@@ -206,7 +206,7 @@ public class PennbookSQL {
 	 */
 	public List<Integer> getWallPosts(int uid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT MID FROM Message WHERE SENDER = ? GROUPBY MID");
+		ps = conn.prepareStatement("SELECT MSGID FROM Message WHERE SENDER = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		while(rs.next())
@@ -219,7 +219,7 @@ public class PennbookSQL {
 	 */
 	public List<Integer> getTaggedPosts(int tid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT FROM HASA WHERE TAGID = ?");
+		ps = conn.prepareStatement("SELECT MSGID FROM HASA WHERE TAGID = ?");
 		ps.setInt(1, tid);
 		rs = ps.executeQuery();
 		while(rs.next())
@@ -303,7 +303,7 @@ public class PennbookSQL {
 		int newid = getNewUserID();
 		try {
 			String pword = SHA1(password);
-			ps = conn.prepareStatement("INSERT INTO Users(UserId, Username, FirstName, LastName, Password) VALUES(?, ?, ?, ?, ?");
+			ps = conn.prepareStatement("INSERT INTO Users(UserId, Username, FirstName, LastName, Password) VALUES(?, ?, ?, ?, ?)");
 			ps.setInt(1, newid);
 			ps.setString(2, username);
 			ps.setString(3, fname);
@@ -355,7 +355,6 @@ public class PennbookSQL {
 				addTag(m, temp[i].trim());
 		}
 		ps.close();
-		rs.close();
 		return m;
 	}
 

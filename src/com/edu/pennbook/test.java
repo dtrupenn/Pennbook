@@ -12,8 +12,7 @@ public class test {
 		PennbookSQL psql = new PennbookSQL();
 		try {
 			psql.startup();
-			psql.updateAffiliation(0, "Penn");
-			System.out.println(psql.getAffiliation(0));
+			System.out.println(psql.getTaggedPosts(1));
 			psql.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
