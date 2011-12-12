@@ -1,10 +1,10 @@
 package com.edu.pennbook.client;
 
-import com.edu.pennbook.server.PennbookSQL;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -49,12 +49,17 @@ public class Pennbook implements EntryPoint {
 		});
 			
 		LoginPage loginPage = new LoginPage(profileService);
-		
-		//while(Cookies.getCookie("UID") == null);
+		ProfilePage profilePage = new ProfilePage(profileService);
 		
 		String currUID = Cookies.getCookie("UID");	
-		// TODO
+		if (currUID == null) {
+			RootPanel.get("mainContainer").add(loginPage.getLoginMainPanel());	
+		} else {
+			// Add all panels to page...
+			RootPanel.get("topbarContainer").add(profilePage.getSearchBarPanel());
+			//RootPanel.get("mainContainer").add(profileMainPanel);
+		}
 		
-		//ProfilePage profilePage = new ProfilePage(profileService, psql);
+		// TODO
 	}
 }

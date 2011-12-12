@@ -8,9 +8,11 @@ import com.google.gwt.user.client.ui.*;
 
 public class LoginPage extends Composite {
 	
+	final private HorizontalPanel loginMainPanel;
+	
 	public LoginPage(final ProfileServiceAsync profileService) {
 		
-		final HorizontalPanel loginMainPanel = new HorizontalPanel();
+		loginMainPanel = new HorizontalPanel();
 		
 		final VerticalPanel loginPanel = new VerticalPanel();
 		final VerticalPanel registerPanel = new VerticalPanel();
@@ -147,8 +149,9 @@ public class LoginPage extends Composite {
 		
 		loginMainPanel.add(loginPanel);
 		loginMainPanel.add(registerPanel);
-		
-		// Add all panels to page...
-		RootPanel.get("mainContainer").add(loginMainPanel);
+	}
+	
+	public HorizontalPanel getLoginMainPanel() {
+		return loginMainPanel;
 	}
 }

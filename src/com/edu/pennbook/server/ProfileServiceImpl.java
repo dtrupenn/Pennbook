@@ -16,6 +16,7 @@
 package com.edu.pennbook.server;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.regex.*;
 
 import com.edu.pennbook.server.PennbookSQL;
@@ -34,6 +35,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 			psql.startup();
 			return "success";
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "failure";
 		}
 	}
@@ -114,5 +116,44 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		}
 
 		return String.valueOf(newUID);
+	}
+	
+	// returns string of comma delineated first name, lastname, affiliation, bday.
+	public String getUserAttributesFromUID(String userID) {
+		String userAttributes = "";
+		int UID = Integer.valueOf(userID);
+		try {
+			userAttributes = psql.getFirstName(UID);
+			userAttributes = userAttributes + "," + psql.getLastName(UID);
+			userAttributes = userAttributes + "," + psql.getAffiliation(UID);
+			//Timestamp birthday = psql.getBDay(UID); 
+			//DateFormat.
+			userAttributes = userAttributes + "," + " "; // TODO
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return userAttributes;
+	}
+	
+	public String changeUserAttributes(String userID, String fname, String lname,
+			String affiliation, String birthday) {
+		int UID = Integer.valueOf(userID);
+		try { // if it is not the current fname/lname/aff/bday... update it!
+			String currFname = psql.getFirstName(UID);
+			if (!currFname.equals(fname))
+				psql.updateFirstName(UID, fname);
+			String currLname = psql.getLastName(UID);
+			if (!currLname.equals(lname))
+				psql.updateLastName(UID, lname);
+			String currAff = psql.getAffiliation(UID);
+			if (!currAff.equals(affiliation))
+				psql.updateAffiliation(UID, affiliation);
+			//Timestamp currBday = psql.getBDay(UID);
+			//Timestamp bday = new Timestamp(); // TODO
+			//psql.updateBDay(UID, bday);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "Success";
 	}
 }

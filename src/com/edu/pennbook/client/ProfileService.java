@@ -15,9 +15,7 @@
  */
 package com.edu.pennbook.client;
 
-import com.edu.pennbook.server.PennbookSQL;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -44,4 +42,9 @@ public interface ProfileService extends RemoteService {
 
 	String attemptRegistration(String fname, String lname, String password,
 			String username);
+	
+	String getUserAttributesFromUID(String userID);
+	
+	String changeUserAttributes(String userID, String fname, String lname,
+			String affiliation, String birthday);
 }

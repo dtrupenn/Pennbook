@@ -1,6 +1,5 @@
 package com.edu.pennbook.client;
 
-import com.edu.pennbook.server.PennbookSQL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface ProfileServiceAsync {
@@ -13,4 +12,9 @@ public interface ProfileServiceAsync {
 	
 	void attemptRegistration(String fname, String lname, String password, String username, 
 			AsyncCallback<String> callback);
+	
+	void getUserAttributesFromUID(String userID, AsyncCallback<String> callback);
+	
+	void changeUserAttributes(String userID, String fname, String lname,
+			String affiliation, String birthday, AsyncCallback<String> callback);
 }

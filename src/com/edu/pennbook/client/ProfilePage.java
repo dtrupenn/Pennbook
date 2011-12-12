@@ -2,15 +2,19 @@ package com.edu.pennbook.client;
 
 import com.edu.pennbook.shared.FieldVerifier;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 
 public class ProfilePage extends Composite {
 
+	final private VerticalPanel profileMainPanel;
+	final private HorizontalPanel searchBarPanel;
+	
 	public ProfilePage(final ProfileServiceAsync profileService) {
 		
-		final VerticalPanel profileMainPanel = new VerticalPanel();
-		final HorizontalPanel searchBarPanel = new HorizontalPanel();
+		profileMainPanel = new VerticalPanel();
+		searchBarPanel = new HorizontalPanel();
 
 		// SEARCH BAR FUNCTIONALITY ****************************************
 
@@ -88,13 +92,17 @@ public class ProfilePage extends Composite {
 
 		// PROFILE INFO FUNCTIONALITY ****************************************
 		
+		String userID = Cookies.getCookie("UID");
+		
 		final Label userTrueName = new Label();
 		userTrueName.setText(""); // TODO
-
-		// OTHER STUFF ****************************************
-
-		// Add all panels to page...
-		RootPanel.get("topbarContainer").add(searchBarPanel);
-		RootPanel.get("mainContainer").add(profileMainPanel);
+	}
+	
+	public VerticalPanel getProfileMainPanel() {
+		return profileMainPanel;
+	}
+	
+	public HorizontalPanel getSearchBarPanel() {
+		return searchBarPanel;
 	}
 }
