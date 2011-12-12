@@ -190,6 +190,17 @@ public class PennbookSQL {
 		return is;
 	}
 
+	//Returns all of the user's interests
+	public String getUsername(int uid) throws SQLException{
+		String un = null;
+		ps = conn.prepareStatement("SELECT USERNAME FROM FanOf WHERE UserId = ?");
+		ps.setInt(1, uid);
+		rs = ps.executeQuery();
+		while(rs.next())
+			un = rs.getString(1);
+		return un;
+	}
+	
 	//Returns all of the user's friends
 	public List<Integer> getFriends(int uid) throws SQLException{
 		List<Integer> fids = new LinkedList<Integer>();
