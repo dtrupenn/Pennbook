@@ -56,10 +56,14 @@ public class LoginPage extends Composite {
 						} else {
 							// store the UID, ie result..?
 							Cookies.setCookie("UID", result);
+							ContentPanel.replaceContent(new HomePage(profileService));
+							TopPanel.replaceContent(new SearchBar(profileService));
 						}
 					}
 					
 				});
+				
+				loginButton.setEnabled(true);
 			}
 		}	
 		
@@ -109,25 +113,38 @@ public class LoginPage extends Composite {
 					@Override
 					public void onFailure(Throwable caught) {
 						// TODO Auto-generated method stub
+						notRegistrableDialog.setText("Registration failed; please try again.");
+						notRegistrableDialog.center();
 					}
 
 					@Override
 					public void onSuccess(String result) {
 						if (result.equals("-1")) {
-							// TODO: dialog box..?
+							// dialog box..?
+							notRegistrableDialog.setText("Registration failed; please try again.");
+							notRegistrableDialog.center();
 						} else if (result.equals("-2")) {
-							// TODO: dialog box..?
+							// username bad format
+							notRegistrableDialog.setText("Username must be an email; please try again.");
+							notRegistrableDialog.center();
 						} else if (result.equals("-3")) {
-							// TODO: dialog box..?
+							// username exists
+							notRegistrableDialog.setText("Username already exists; please try again.");
+							notRegistrableDialog.center();
 						} else if (result.equals("-4")) {
-							// TODO: dialog box..?
+							// password bad format
+							notRegistrableDialog.setText("Password may only contain alphanumerics; please try again.");
+							notRegistrableDialog.center();
 						} else {
 							// store the UID, ie result..?
 							Cookies.setCookie("UID", result);
+							ContentPanel.replaceContent(new HomePage(profileService));
+							TopPanel.replaceContent(new SearchBar(profileService));
 						}
 					}
-					
 				});
+				
+				regiButton.setEnabled(true);
 			}
 		}	
 		

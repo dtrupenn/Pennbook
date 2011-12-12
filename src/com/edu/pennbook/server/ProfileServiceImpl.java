@@ -126,11 +126,13 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		try {
 			userAttributes = psql.getFirstName(UID);
 			userAttributes = userAttributes + "," + psql.getLastName(UID);
-			userAttributes = userAttributes + "," + psql.getAffiliation(UID);
+			userAttributes = userAttributes + "," + psql.getAffiliation(UID) + ",";
 			Timestamp birthday = psql.getBDay(UID); 
-			String[] part1 = birthday.toString().split(" ");
-			String[] part2 = part1[0].split("-"); // format: yyyy, mm, dd
-			userAttributes = userAttributes + "," + part2[2] + "/" + part2[1] + "/" + part2[0]; // TODO
+			if (birthday.toString() != null) {
+				String[] part1 = birthday.toString().split(" ");
+				String[] part2 = part1[0].split("-"); // format: yyyy, mm, dd
+				userAttributes = userAttributes + part2[1] + "/" + part2[2] + "/" + part2[0]; // TODO
+			} 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

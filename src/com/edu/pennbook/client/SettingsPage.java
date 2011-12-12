@@ -25,13 +25,18 @@ public class SettingsPage extends Composite {
 		final TextBox birthdayBox = new TextBox();
 		
 		final Button submitChanges = new Button("Submit");
+		final DialogBox settingsFail = new DialogBox();
+		final Button closeBoxButton = new Button();
+		closeBoxButton.setText("Close and refresh.");
+		settingsFail.add(closeBoxButton);
 		
 		final String userID = Cookies.getCookie("UID");
 		
 		profileService.getUserAttributesFromUID(userID, new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				settingsFail.setText("Loading failed, please refresh page and try again.");
+				settingsFail.center();
 			}
 
 			@Override
@@ -43,6 +48,16 @@ public class SettingsPage extends Composite {
 				birthdayBox.setText(helper[3]);
 			}
 		});
+		
+		class closeHandler implements ClickHandler {
+			public void onClick(ClickEvent event) {
+				settingsFail.hide();
+				ContentPanel.replaceContent(new SettingsPage(profileService));
+			}
+		}
+		
+		closeHandler cHandler = new closeHandler();
+		closeBoxButton.addClickHandler(cHandler);
 		
 		class settingsHandler implements ClickHandler {
 			/**
@@ -57,16 +72,22 @@ public class SettingsPage extends Composite {
 				String lname = lastNameBox.getText();
 				String aff = affiliationBox.getText();
 				String bday = birthdayBox.getText(); // make sure this is date/month/year format... drop downs?
+				String[] bdayParts = bday.split("/");
+				bday = bdayParts[1] + "/" + bdayParts[0] + "/" + bdayParts[2];
 				profileService.changeUserAttributes(userID, fname, lname, aff, bday, new AsyncCallback<String>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+						settingsFail.setText("Changing settings failed, please try again.");
+						settingsFail.center();
 					}
 
 					@Override
 					public void onSuccess(String result) {
-						if(!result.equals("Success"))
-							;// Dialog box?
+						if(!result.equals("Success")) {
+							settingsFail.setText("Changing settings failed, please try again.");
+							settingsFail.center();
+						}
+						ContentPanel.replaceContent(new SettingsPage(profileService));
 					}
 				});
 			}

@@ -47,15 +47,14 @@ public class Pennbook implements EntryPoint {
 		});
 		
 		RootPanel.get("mainContainer").add(ContentPanel.getInstance());	
-		// RootPanel.get("topbarContainer").add(TopPanel.getInstance());
+		RootPanel.get("topbarContainer").add(TopPanel.getInstance());
 		
 		String currUID = Cookies.getCookie("UID");	
 		if (currUID == null) {
 			ContentPanel.replaceContent(new LoginPage(profileService));
 		} else {
-			// RootPanel.get("topbarContainer").add(profilePage.getSearchBarPanel());
+			TopPanel.replaceContent(new SearchBar(profileService));
 			ContentPanel.replaceContent(new ProfilePage(profileService));
 		}
-		// TODO
 	}
 }
