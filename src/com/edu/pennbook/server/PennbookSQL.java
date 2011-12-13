@@ -291,6 +291,32 @@ public class PennbookSQL {
 	}
 	
 	/*
+	 * Returns msg Sender id if found, else send -1
+	 */
+	public int getMsgSender(int mid) throws SQLException{
+		int sender = -1;
+		ps = conn.prepareStatement("SELECT SENDER FROM MESSAGE WHERE MSGID = ?");
+		ps.setInt(1, mid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			sender = rs.getInt(1);
+		return sender;
+	}
+	
+	/*
+	 * Returns msg Reciever id if found, else send -1
+	 */
+	public int getMsgReciever(int mid) throws SQLException{
+		int reciever = -1;
+		ps = conn.prepareStatement("SELECT SENDER FROM MESSAGE WHERE MSGID = ?");
+		ps.setInt(1, mid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			reciever = rs.getInt(1);
+		return reciever;
+	}
+	
+	/*
 	 * Returns a list of Comment ids for each message
 	 */
 	public List<String> getMsgComments(int mid) throws SQLException{
