@@ -42,7 +42,9 @@ public class PennbookSQL {
 		statement.close();
 	}
 
-	//Checks for the largest UserId and increments it by one, else return 0
+	/*
+	 * Check for the largest UserId and increment it by one, else return 1
+	 */
 	public int getNewUserID() throws SQLException{
 		int id = 0;
 		statement = conn.createStatement();
@@ -55,7 +57,9 @@ public class PennbookSQL {
 		return id;
 	}
 
-	//Checks for the largest MsgId and increments it by one, else return 0
+	/*
+	 * Check for the largest MsgId and increment it by one, else return 1
+	 */
 	public int getNewMsgId() throws SQLException{
 		int id = 0;
 		statement = conn.createStatement();
@@ -68,7 +72,9 @@ public class PennbookSQL {
 		return id;
 	}
 
-	//Check for the largest TagId and increments it by one, else return 0
+	/*
+	 * Check for the largest TagId and increment it by one, else return 1
+	 */
 	public int getNewTagId() throws SQLException{
 		int id = 0;
 		statement = conn.createStatement();
@@ -80,11 +86,27 @@ public class PennbookSQL {
 		return id;
 	}
 
-	//Check for the largerst IId and increments it by one, else return 0
+	/*
+	 * Check for the largest IID and increment it by one, elst return 1
+	 */
 	public int getNewInterestId() throws SQLException{
 		int id = 0;
 		statement = conn.createStatement();
 		ResultSet result = statement.executeQuery("SELECT MAX(IID) FROM Interest");
+		if(result.next())
+			id = result.getInt(1) + 1;
+		statement.close();
+		result.close();
+		return id;
+	}
+	
+	/*
+	 * Check for the largest CID and increment it by one else return 1
+	 */
+	public int getNewCommentId() throws SQLException{
+		int id = 0;
+		statement = conn.createStatement();
+		ResultSet result = statement.executeQuery("SELECT MAX(CID) FROM COMMENT");
 		if(result.next())
 			id = result.getInt(1) + 1;
 		statement.close();
@@ -235,9 +257,52 @@ public class PennbookSQL {
 		rs = ps.executeQuery();
 		while(rs.next())
 			posts.add(rs.getInt(1));
+		rs.close();
+		ps.close();
 		return posts;
 	}
 
+	/*
+	 * Returns message string from mid
+	 */
+	public String getMsgString(int mid) throws SQLException{
+		String msg = null;
+		ps = conn.prepareStatement("SELECT MSG FROM MESSAGE WHERE MSGID = ?");
+		ps.setInt(1, mid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			msg = rs.getString(1);
+		rs.close();
+		ps.close();
+		return msg;
+	}
+	
+	/*
+	 * Returns the timestamp of message mid
+	 */
+	public Timestamp getMsgDate(int mid) throws SQLException{
+		Timestamp t = null;
+		ps = conn.prepareStatement("SELECT DAT FROM POST WHERE MSGID = ?");
+		ps.setInt(1, mid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			t = rs.getTimestamp(1);
+		return t;
+	}
+	
+	/*
+	 * Returns a list of Comment ids for each message
+	 */
+	public List<String> getMsgComments(int mid) throws SQLException{
+		List<String> l = new LinkedList<String>();
+		ps = conn.prepareStatement("SELECT CID FROM MAYHAVE WHERE MSGID = ?");
+		ps.setInt(1, mid);
+		rs = ps.executeQuery();
+		while(rs.next())
+			l.add(rs.getString(1));
+		return l;
+	}
+	
 	/*
 	 * Returns TagId if tag exists, else returns -1
 	 */
@@ -248,6 +313,8 @@ public class PennbookSQL {
 		rs = ps.executeQuery();
 		if(rs.next())
 			id = rs.getInt(1);
+		rs.close();
+		ps.close();
 		return id;
 	}
 
@@ -256,11 +323,19 @@ public class PennbookSQL {
 	 * Updates user's username *MUST CALL userNameCheck BEFORE BEING USED*
 	 */
 	public void updateUsername(int uid, String username) throws SQLException{
+		String fname = null;
 		ps = conn.prepareStatement("UPDATE Users SET Username = ? WHERE UserId = ?");
 		ps.setString(1, username);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
+		ps = conn.prepareStatement("SELECT FIRSTNAME FROM USERS WHERE USERID = ?");
+		ps.setInt(1, uid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			fname = rs.getString(1);
+		postMsg(uid, uid, fname + " just updated their username");
 		ps.close();
+		rs.close();
 	}
 
 	/*
@@ -271,6 +346,7 @@ public class PennbookSQL {
 		ps.setString(1, fname);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
+		postMsg(uid, uid, fname + " just updated their First Name");
 		ps.close();
 	}
 
@@ -278,33 +354,57 @@ public class PennbookSQL {
 	 * Updates user's Last Name
 	 */
 	public void updateLastName(int uid, String lname) throws SQLException{
+		String fname = null;
 		ps = conn.prepareStatement("UPDATE Users SET LastName = ? WHERE UserId = ?");
 		ps.setString(1, lname);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
+		ps = conn.prepareStatement("SELECT FIRSTNAME FROM USERS WHERE USERID = ?");
+		ps.setInt(1, uid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			fname = rs.getString(1);
+		postMsg(uid, uid, fname + " just updated their Last Name");
 		ps.close();
+		rs.close();
 	}
 
 	/*
 	 * Updates user's affiliation
 	 */
 	public void updateAffiliation(int uid, String aff) throws SQLException{
+		String fname = null;
 		ps = conn.prepareStatement("UPDATE Users SET Affiliation = ? WHERE UserId = ?");
 		ps.setString(1, aff);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
+		ps = conn.prepareStatement("SELECT FIRSTNAME FROM USERS WHERE USERID = ?");
+		ps.setInt(1, uid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			fname = rs.getString(1);
+		postMsg(uid, uid, fname + " just updated their Affiliation");
 		ps.close();
+		rs.close();
 	}
 
 	/*
 	 * Updates user's birthday
 	 */
 	public void updateBDay(int uid, Timestamp bday) throws SQLException{
+		String fname = null;
 		ps = conn.prepareStatement("UPDATE Users SET Birthday = ? WHERE UserId = ?");
 		ps.setTimestamp(1, bday);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
+		ps = conn.prepareStatement("SELECT FIRSTNAME FROM USERS WHERE USERID = ?");
+		ps.setInt(1, uid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			fname = rs.getString(1);
+		postMsg(uid, uid, fname + " just updated their Birthday");
 		ps.close();
+		rs.close();
 	}
 
 	/*
@@ -422,6 +522,23 @@ public class PennbookSQL {
 		return i;
 	}
 
+	/*
+	 * Adds a Comment to a message mid from User uid with the value comment
+	 */
+	public void postComment(int mid, int uid, String comment) throws SQLException{
+		int cid = getNewCommentId();
+		ps = conn.prepareStatement("INSERT INTO COMMENT(CID, MSG, COMMENTOR) VALUES(?, ?, ?)");
+		ps.setInt(1, cid);
+		ps.setString(2, comment);
+		ps.setInt(3, uid);
+		ps.execute();
+		ps = conn.prepareStatement("INSERT INTO MAYHAVE(MSGID, CID) VALUES(?, ?)");
+		ps.setInt(1, mid);
+		ps.setInt(2, cid);
+		ps.execute();
+		ps.close();
+	}
+	
 	/*
 	 * Adds an column to the Admire table
 	 */
