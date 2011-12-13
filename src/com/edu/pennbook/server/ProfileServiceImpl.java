@@ -65,7 +65,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 
 	@Override
 	public String attemptLogin(String username, String password) {
-
+		
 		int loginUID;
 		loginUID = psql.userCheck(username, password);
 
@@ -176,9 +176,17 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	public String getHomepagePostsFromUID(String userID) {
-		// List<Integer> homepagePostIds = psql.get
-		// TODO
-		return "";
+		int UID = Integer.valueOf(userID);
+		String homepagePosts = "";
+		try {
+			List<Integer> homePageIds = psql.getWallPosts(UID);
+			for(int i: homePageIds)
+				homepagePosts = homepagePosts + i + "\t";
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return homepagePosts;
 	}
 	
 	public String getProfilePostsFromUID(String userID) {

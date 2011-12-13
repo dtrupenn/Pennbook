@@ -148,7 +148,7 @@ public class HomePage extends Composite {
 						@Override
 						public void onSuccess(String result) {
 							String[] commentIDs = result.split("\t");
-							for (String commentID : commentIDs) {
+							for (final String commentID : commentIDs) {
 								final HTML commentText = new HTML();
 								profileService.getCommentAuthor(commentID, new AsyncCallback<String>() {
 									@Override
@@ -164,8 +164,18 @@ public class HomePage extends Composite {
 											}
 											@Override
 											public void onSuccess(String commentAuthorAttributes) {
-												String[] attributes = commentAuthorAttributes.split(",");
-												commentText.setHTML("<strong>" + attributes[0] + " " + attributes[1] + ": </strong>");
+												final String[] attributes = commentAuthorAttributes.split(",");
+												
+												profileService.getCommentText(commentID, new AsyncCallback<String>() {
+													@Override
+													public void onFailure(Throwable caught) {
+														// FAIL
+													}
+													@Override
+													public void onSuccess(String result) {
+														commentText.setHTML("<strong>" + attributes[0] + " " + attributes[1] + ": </strong>" + result);
+													}
+												});
 											}
 										});
 
@@ -180,17 +190,6 @@ public class HomePage extends Composite {
 
 										commentHandler cHandler = new commentHandler();
 										commentText.addClickHandler(cHandler);
-									}
-								});
-
-								profileService.getCommentText(commentID, new AsyncCallback<String>() {
-									@Override
-									public void onFailure(Throwable caught) {
-										// FAIL
-									}
-									@Override
-									public void onSuccess(String result) {
-										commentText.setHTML(commentText.getHTML() + result);
 									}
 								});
 

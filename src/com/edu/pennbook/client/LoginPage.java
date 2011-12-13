@@ -52,7 +52,7 @@ public class LoginPage extends Composite {
 					public void onSuccess(String result) {	
 						if (result.equals("-1")) {
 							// login fails.. dialog box..? "login failed, please try again"
-							noSuchUserDialog.setText("Login failed, please try again.");
+							noSuchUserDialog.setText("Username/password is incorrect, please try again.");
 							noSuchUserDialog.center();
 						} else {
 							// store the UID, ie result..?
