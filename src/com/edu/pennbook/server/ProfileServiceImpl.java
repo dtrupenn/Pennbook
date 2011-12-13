@@ -212,7 +212,17 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		return MID + "";
 	}
 	
-	public String addNewComment(String fromID, String messageID) {
-		return "";
+	public String addNewComment(String fromID, String messageID, String comment) {
+		int FID = Integer.valueOf(fromID);
+		int MID = Integer.valueOf(messageID);
+		
+		try {
+			psql.postComment(MID, FID, comment);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "Fail";
+		}
+
+		return "Success";
 	}
 }

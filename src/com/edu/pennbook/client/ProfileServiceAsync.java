@@ -25,4 +25,6 @@ public interface ProfileServiceAsync {
 	void getProfilePostsFromUID(String userID, AsyncCallback<String> asyncCallback);
 	
 	void addNewPost(String fromID, String toID, String message, AsyncCallback<String> asyncCallback);
+	
+	void addNewComment(String fromID, String messageID, String comment, AsyncCallback<String> asyncCallback);
 }

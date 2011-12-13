@@ -25,7 +25,7 @@ public class ProfilePage extends Composite {
 		profileService.getUserAttributesFromUID(userID, new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				// FAIL
 			}
 
 			@Override
@@ -39,7 +39,7 @@ public class ProfilePage extends Composite {
 		profileService.getUsernameFromUID(userID, new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				// FAIL
 			}
 
 			@Override
@@ -63,7 +63,7 @@ public class ProfilePage extends Composite {
 				profileService.addNewPost(userID, profileUserID, textToComment, new AsyncCallback<String>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub	
+						// FAIL
 					}
 
 					@Override
@@ -84,7 +84,7 @@ public class ProfilePage extends Composite {
 		profileService.getProfilePostsFromUID(userID, new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				// FAIL
 			}
 
 			@Override
@@ -97,8 +97,10 @@ public class ProfilePage extends Composite {
 					allPostsReversed[i-1] = allPosts[allPosts.length - i];
 				}
 				
-				for (String post : allPosts) {
-					Label postText = new Label(post);
+				for (String postID : allPosts) {
+					// TODO: get message text from post using getMsgString
+					Label postText = new Label(postID);
+					
 					Label addComment = new Label("È comment");
 					final HorizontalPanel hiddenPanel = new HorizontalPanel();
 					hiddenPanel.setVisible(false);
@@ -117,13 +119,21 @@ public class ProfilePage extends Composite {
 					showHandler sHandler = new showHandler();
 					addComment.addClickHandler(sHandler);
 					
+					final String messageID = postID;
 					class commentHandler implements KeyUpHandler {
 						@Override
 						public void onKeyUp(KeyUpEvent event) {
 							String textToComment = commentBox.getText();
-							
-							// TODO Auto-generated method stub
-							
+							profileService.addNewComment(userID, messageID, textToComment, new AsyncCallback<String>() {
+								@Override
+								public void onFailure(Throwable caught) {
+									// FAIL
+								}
+								@Override
+								public void onSuccess(String result) {
+									// TODO refresh hidden panel?
+								}
+							});
 						}
 					}
 					
