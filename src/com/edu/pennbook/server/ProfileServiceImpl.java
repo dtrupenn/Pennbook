@@ -22,7 +22,6 @@ import java.util.regex.*;
 
 import com.edu.pennbook.server.PennbookSQL;
 import com.edu.pennbook.client.ProfileService;
-import com.edu.pennbook.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 @SuppressWarnings("serial")
@@ -187,9 +186,8 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		String profilePosts = "";
 		try {
 			List<Integer> profilePageIds = psql.getWallPosts(UID);
-			for(int i: profilePageIds) {
+			for(int i: profilePageIds)
 				profilePosts = profilePosts + i + "\t";
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -301,13 +299,11 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		String commentIDs = "";
 		try {
 			List<Integer> listOfCmts = psql.getMsgComments(MID);
-			for (Integer i : listOfCmts) {
+			for (Integer i : listOfCmts)
 				commentIDs = commentIDs + i + "\t";
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
 		return commentIDs;
 	}
 
