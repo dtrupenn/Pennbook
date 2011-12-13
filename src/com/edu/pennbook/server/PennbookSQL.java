@@ -25,7 +25,7 @@ public class PennbookSQL {
 			//This will load the MySQL driver
 			Class.forName("com.mysql.jdbc.Driver");
 			//Setup the connection with the DB
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/Pennbook?user=PENNBOOK&password=pennbook");			
+			conn = DriverManager.getConnection("jdbc:mysql://10.204.49.255:3306/Pennbook?user=PENNBOOK&password=pennbook");			
 		}
 		catch (Exception e){
 			throw e;
@@ -49,7 +49,7 @@ public class PennbookSQL {
 		int id = 0;
 		statement = conn.createStatement();
 		//Query returns max UserId value
-		ResultSet result = statement.executeQuery("SELECT MAX(UserId) FROM Users");
+		ResultSet result = statement.executeQuery("SELECT MAX(USERID) FROM USERS");
 		if(result.next())
 			id = result.getInt(1) + 1;
 		statement.close();
@@ -64,7 +64,7 @@ public class PennbookSQL {
 		int id = 0;
 		statement = conn.createStatement();
 		//Query retunrs max UserId value
-		ResultSet result = statement.executeQuery("SELECT MAX(MsgID) FROM Message");
+		ResultSet result = statement.executeQuery("SELECT MAX(MSGID) FROM MESSAGE");
 		if(result.next())
 			id = result.getInt(1) + 1;
 		statement.close();
@@ -78,7 +78,7 @@ public class PennbookSQL {
 	public int getNewTagId() throws SQLException{
 		int id = 0;
 		statement = conn.createStatement();
-		ResultSet result = statement.executeQuery("SELECT MAX(TagID) FROM HashTag");
+		ResultSet result = statement.executeQuery("SELECT MAX(TAGID) FROM HASHTAG");
 		if(result.next())
 			id = result.getInt(1) + 1;
 		statement.close();
@@ -92,14 +92,14 @@ public class PennbookSQL {
 	public int getNewInterestId() throws SQLException{
 		int id = 0;
 		statement = conn.createStatement();
-		ResultSet result = statement.executeQuery("SELECT MAX(IID) FROM Interest");
+		ResultSet result = statement.executeQuery("SELECT MAX(IID) FROM INTEREST");
 		if(result.next())
 			id = result.getInt(1) + 1;
 		statement.close();
 		result.close();
 		return id;
 	}
-	
+
 	/*
 	 * Check for the largest CID and increment it by one else return 1
 	 */
@@ -117,7 +117,7 @@ public class PennbookSQL {
 	//Returns true if userName is not taken, else returns false
 	public boolean userNameCheck(String username) throws SQLException{
 		boolean check = true;
-		ps = conn.prepareStatement("SELECT UserName FROM Users WHERE Username LIKE ?");
+		ps = conn.prepareStatement("SELECT USERNAME FROM USERS WHERE USERNAME LIKE ?");
 		ps.setString(1, username);
 		rs = ps.executeQuery();
 		if(rs.next())
@@ -152,7 +152,7 @@ public class PennbookSQL {
 	//Returns the user's First Name if uid exists, null otherwise.
 	public String getFirstName(int uid) throws SQLException{
 		String fname = null;
-		ps = conn.prepareStatement("SELECT FirstName FROM Users WHERE UserId = ?");
+		ps = conn.prepareStatement("SELECT FIRSTNAME FROM USERS WHERE USERID = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		if(rs.next())
@@ -165,7 +165,7 @@ public class PennbookSQL {
 	//Returns the user's Last Name if uid exists, null otherwise.
 	public String getLastName(int uid) throws SQLException{
 		String lname = null;
-		ps = conn.prepareStatement("SELECT LastName FROM Users WHERE UserId = ?");
+		ps = conn.prepareStatement("SELECT LASTNAME FROM USERS WHERE USERID = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		if(rs.next())
@@ -178,7 +178,7 @@ public class PennbookSQL {
 	//Returns the user's affiliation if uid exists, null otherwise.
 	public String getAffiliation(int uid) throws SQLException{
 		String aff = null;
-		ps = conn.prepareStatement("SELECT Affiliation FROM Users WHERE UserId = ?");
+		ps = conn.prepareStatement("SELECT AFFILIATION FROM USERS WHERE USERID = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		if(rs.next())
@@ -191,7 +191,7 @@ public class PennbookSQL {
 	//Returns the user's birthday if uid exists, null otherwise.
 	public Timestamp getBDay(int uid) throws SQLException{
 		Timestamp bday = null;
-		ps = conn.prepareStatement("SELECT Birthday FROM Users WHERE UserId = ?");
+		ps = conn.prepareStatement("SELECT BIRTHDAY FROM USERS WHERE USERID = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		if(rs.next())
@@ -204,7 +204,7 @@ public class PennbookSQL {
 	//Returns all of the user's interests
 	public List<Integer> getInterests(int uid) throws SQLException{
 		List<Integer> is= new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT IID FROM FanOf WHERE UserId = ?");
+		ps = conn.prepareStatement("SELECT IID FROM FANOF WHERE USERID = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		while(rs.next())
@@ -215,18 +215,18 @@ public class PennbookSQL {
 	//Returns all of the user's interests
 	public String getUsername(int uid) throws SQLException{
 		String un = null;
-		ps = conn.prepareStatement("SELECT USERNAME FROM Users WHERE UserId = ?");
+		ps = conn.prepareStatement("SELECT USERNAME FROM USERS WHERE USERID = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		while(rs.next())
 			un = rs.getString(1);
 		return un;
 	}
-	
+
 	//Returns all of the user's friends
 	public List<Integer> getFriends(int uid) throws SQLException{
 		List<Integer> fids = new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT FId FROM FriendOf WHERE UserId = ?");
+		ps = conn.prepareStatement("SELECT FID FROM FRIENDOF WHERE USERID = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		while(rs.next())
@@ -246,7 +246,7 @@ public class PennbookSQL {
 			posts.add(rs.getInt(1));
 		return posts;
 	}
-	
+
 	/*
 	 * Returns all MIDs that contain tag from tid.
 	 */
@@ -276,7 +276,7 @@ public class PennbookSQL {
 		ps.close();
 		return msg;
 	}
-	
+
 	/*
 	 * Returns the timestamp of message mid
 	 */
@@ -289,7 +289,7 @@ public class PennbookSQL {
 			t = rs.getTimestamp(1);
 		return t;
 	}
-	
+
 	/*
 	 * Returns msg Sender id if found, else send -1
 	 */
@@ -302,7 +302,7 @@ public class PennbookSQL {
 			sender = rs.getInt(1);
 		return sender;
 	}
-	
+
 	/*
 	 * Returns msg Reciever id if found, else send -1
 	 */
@@ -315,7 +315,7 @@ public class PennbookSQL {
 			reciever = rs.getInt(1);
 		return reciever;
 	}
-	
+
 	/*
 	 * Returns a list of Comment ids for each message
 	 */
@@ -328,7 +328,7 @@ public class PennbookSQL {
 			l.add(rs.getInt(1));
 		return l;
 	}
-	
+
 	/*
 	 * Returns the comment's string, else returns null
 	 */
@@ -341,7 +341,7 @@ public class PennbookSQL {
 			comment = rs.getString(1);
 		return comment;
 	}
-	
+
 	/*
 	 * Returns the comment's string, else returns null
 	 */
@@ -354,7 +354,7 @@ public class PennbookSQL {
 			time = rs.getTimestamp(1);
 		return time;
 	}
-	
+
 	/*
 	 * Returns the comment's msgid, else returns -1
 	 */
@@ -367,7 +367,7 @@ public class PennbookSQL {
 			m = rs.getInt(1);
 		return m;
 	}
-	
+
 	/*
 	 * Returns the comment's userid, else returns -1
 	 */
@@ -380,7 +380,7 @@ public class PennbookSQL {
 			u = rs.getInt(1);
 		return u;
 	}
-	
+
 	/*
 	 * Returns list of userid's that admired the post, else return empty list
 	 */
@@ -393,27 +393,41 @@ public class PennbookSQL {
 			admirations.add(rs.getInt(1));
 		return admirations;
 	}
-	
+
 	/*
 	 * Returns a list of MSGIDs for user uid's homepage, else returns an empty list
 	 */
 	public List<Integer> getHomepagePosts(int uid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
 		List<Integer> users = new LinkedList<Integer>();
+		int min = Integer.MAX_VALUE;
+		int max = Integer.MIN_VALUE;
 		users.add(uid);
 		ps = conn.prepareStatement("SELECT FID FROM FRIENDOF WHERE USERID = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
-		while(rs.next()){
+		while(rs.next())
 			users.add(rs.getInt(1));
-		
-		}
-		ps = conn.prepareStatement("SELECT MSGID FROM MESSAGE WHERE SENDER = ?");
-		
+		for(Integer user: users){
+			ps = conn.prepareStatement("SELECT MSGID FROM MESSAGE WHERE SENDER = ?");
+			ps.setInt(1, user);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				int temp = rs.getInt(1);
+				if(temp > max)
+					max = temp;
+				if(temp < min)
+					min = temp;
+				posts.add(temp);
+			}
+		}	
+		quick_srt(posts, min, max);
+		while(posts.size() > 20)
+			posts.remove(0);
 		return posts;
 	}
-	
-	
+
+
 	/*
 	 * Returns TagId if tag exists, else returns -1
 	 */
@@ -435,7 +449,7 @@ public class PennbookSQL {
 	 */
 	public void updateUsername(int uid, String username) throws SQLException{
 		String fname = null;
-		ps = conn.prepareStatement("UPDATE Users SET Username = ? WHERE UserId = ?");
+		ps = conn.prepareStatement("UPDATE USERS SET USERNAME = ? WHERE USERID = ?");
 		ps.setString(1, username);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
@@ -453,7 +467,7 @@ public class PennbookSQL {
 	 * Updates user's First Name
 	 */
 	public void updateFirstName(int uid, String fname) throws SQLException{
-		ps = conn.prepareStatement("UPDATE Users SET FirstName = ? WHERE UserId = ?");
+		ps = conn.prepareStatement("UPDATE USERS SET FIRSTNAME = ? WHERE USERID = ?");
 		ps.setString(1, fname);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
@@ -466,7 +480,7 @@ public class PennbookSQL {
 	 */
 	public void updateLastName(int uid, String lname) throws SQLException{
 		String fname = null;
-		ps = conn.prepareStatement("UPDATE Users SET LastName = ? WHERE UserId = ?");
+		ps = conn.prepareStatement("UPDATE USERS SET LASTNAME = ? WHERE USERID = ?");
 		ps.setString(1, lname);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
@@ -485,7 +499,7 @@ public class PennbookSQL {
 	 */
 	public void updateAffiliation(int uid, String aff) throws SQLException{
 		String fname = null;
-		ps = conn.prepareStatement("UPDATE Users SET Affiliation = ? WHERE UserId = ?");
+		ps = conn.prepareStatement("UPDATE USERS SET AFFILIATION = ? WHERE USERID = ?");
 		ps.setString(1, aff);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
@@ -504,7 +518,7 @@ public class PennbookSQL {
 	 */
 	public void updateBDay(int uid, Timestamp bday) throws SQLException{
 		String fname = null;
-		ps = conn.prepareStatement("UPDATE Users SET Birthday = ? WHERE UserId = ?");
+		ps = conn.prepareStatement("UPDATE USERS SET BIRTHDAY = ? WHERE USERID = ?");
 		ps.setTimestamp(1, bday);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
@@ -650,12 +664,12 @@ public class PennbookSQL {
 		ps.close();
 		return cid;
 	}
-	
+
 	/*
 	 * Adds an column to the Admire table
 	 */
 	public void admire(int uid, int mid) throws SQLException {
-		ps = conn.prepareStatement("INSERT INTO Admire(UserId, MsgId) VALUES(?,?)");
+		ps = conn.prepareStatement("INSERT INTO ADMIRE(USERID, MSGID) VALUES(?,?)");
 		ps.setInt(1, uid);
 		ps.setInt(2, mid);
 		ps.execute();
@@ -667,23 +681,23 @@ public class PennbookSQL {
 	 * a list of UserIds. 
 	 */
 	public List<Integer> uSearch(String s) throws SQLException{
-		
+
 		String[] temp = s.split(" ");
 		List<Integer> results = new LinkedList<Integer>();
 		for(String t: temp){
-			ps = conn.prepareStatement("SELECT UserId FROM Users WHERE FirstName LIKE ?");
+			ps = conn.prepareStatement("SELECT USERID FROM USERS WHERE FIRSTNAME LIKE ?");
 			ps.setString(1, t + "%");
 			rs = ps.executeQuery();
 			while(rs.next())
 				if(!results.contains(rs.getInt(1)))
 					results.add(rs.getInt(1));
-			ps = conn.prepareStatement("SELECT UserId FROM Users WHERE LastName LIKE ?");
+			ps = conn.prepareStatement("SELECT USERID FROM USERS WHERE LASTNAME LIKE ?");
 			ps.setString(1, t + "%");
 			rs = ps.executeQuery();
 			while(rs.next())
 				if(!results.contains(rs.getInt(1)))
 					results.add(rs.getInt(1));
-			ps = conn.prepareStatement("SELECT UserId FROM Users WHERE Username LIKE ?");
+			ps = conn.prepareStatement("SELECT USERID FROM USERS WHERE USERNAME LIKE ?");
 			ps.setString(1, t + "%");
 			rs = ps.executeQuery();
 			while(rs.next())
@@ -701,7 +715,7 @@ public class PennbookSQL {
 	 */
 	public List<Integer> tSearch(String s) throws SQLException{
 		List<Integer> results = new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT MsgID FROM HashTag WHERE Tag LIKE ?");
+		ps = conn.prepareStatement("SELECT MSGID FROM HASHTAG WHERE TAG LIKE ?");
 		ps.setString(1, s + "%");
 		rs = ps.executeQuery();
 		while(rs.next())
@@ -717,7 +731,7 @@ public class PennbookSQL {
 	 */
 	public List<Integer> iSearch(String s) throws SQLException{
 		List<Integer> results = new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT IID FROM Interest WHERE Interest LIKE ?");
+		ps = conn.prepareStatement("SELECT IID FROM INTEREST WHERE INTEREST LIKE ?");
 		ps.setString(1, s + "%");
 		rs = ps.executeQuery();
 		while(rs.next())
@@ -759,6 +773,34 @@ public class PennbookSQL {
 		return buf.toString();
 	}
 
+	public void quick_srt(List<Integer> slist,int low, int n){
+		int lo = low;
+		int hi = n;
+		if (lo >= n) {
+			return;
+		}
+		int mid = slist.get((lo + hi) / 2);
+		while (lo < hi) {
+			while (lo<hi && slist.get(lo) < mid) {
+				lo++;
+			}
+			while (lo<hi && slist.get(hi) > mid) {
+				hi--;
+			}
+			if (lo < hi) {
+				int T = slist.get(lo);
+				slist.set(lo, slist.get(hi));
+				slist.set(hi, T);
+			}
+		}
+		if (hi < lo) {
+			int T = hi;
+			hi = lo;
+			lo = T;
+		}
+		quick_srt(slist, low, lo);
+		quick_srt(slist, lo == low ? lo+1 : lo, n);
+	}
 
 	void commit(){
 		try {
