@@ -319,13 +319,13 @@ public class PennbookSQL {
 	/*
 	 * Returns a list of Comment ids for each message
 	 */
-	public List<String> getMsgComments(int mid) throws SQLException{
-		List<String> l = new LinkedList<String>();
+	public List<Integer> getMsgComments(int mid) throws SQLException{
+		List<Integer> l = new LinkedList<Integer>();
 		ps = conn.prepareStatement("SELECT CID FROM MAYHAVE WHERE MSGID = ?");
 		ps.setInt(1, mid);
 		rs = ps.executeQuery();
 		while(rs.next())
-			l.add(rs.getString(1));
+			l.add(rs.getInt(1));
 		return l;
 	}
 	
