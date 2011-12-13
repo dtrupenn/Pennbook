@@ -381,13 +381,34 @@ public class PennbookSQL {
 		return u;
 	}
 	
+	/*
+	 * Returns list of userid's that admired the post, else return empty list
+	 */
+	public List<Integer> getAdmirations(int mid) throws SQLException{
+		List<Integer> admirations = new LinkedList<Integer>();
+		ps = conn.prepareStatement("SELECT USERID FROM ADMIRE WHERE MSGID = ?");
+		ps.setInt(1, mid);
+		rs = ps.executeQuery();
+		while(rs.next())
+			admirations.add(rs.getInt(1));
+		return admirations;
+	}
 	
 	/*
 	 * Returns a list of MSGIDs for user uid's homepage, else returns an empty list
 	 */
 	public List<Integer> getHomepagePosts(int uid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
+		List<Integer> users = new LinkedList<Integer>();
+		users.add(uid);
+		ps = conn.prepareStatement("SELECT FID FROM FRIENDOF WHERE USERID = ?");
+		ps.setInt(1, uid);
+		rs = ps.executeQuery();
+		while(rs.next()){
+			users.add(rs.getInt(1));
 		
+		}
+		ps = conn.prepareStatement("SELECT MSGID FROM MESSAGE WHERE SENDER = ?");
 		
 		return posts;
 	}
