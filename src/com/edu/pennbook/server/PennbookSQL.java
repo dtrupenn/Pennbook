@@ -330,6 +330,70 @@ public class PennbookSQL {
 	}
 	
 	/*
+	 * Returns the comment's string, else returns null
+	 */
+	public String getCommentString(int cid) throws SQLException{
+		String comment = null;
+		ps = conn.prepareStatement("SELECT MSG FROM COMMENT WHERE CID = ?");
+		ps.setInt(1, cid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			comment = rs.getString(1);
+		return comment;
+	}
+	
+	/*
+	 * Returns the comment's string, else returns null
+	 */
+	public Timestamp getCommentDate(int cid) throws SQLException{
+		Timestamp time = null;
+		ps = conn.prepareStatement("SELECT DAT FROM MAYHAVE WHERE CID = ?");
+		ps.setInt(1, cid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			time = rs.getTimestamp(1);
+		return time;
+	}
+	
+	/*
+	 * Returns the comment's msgid, else returns -1
+	 */
+	public int getCommentMsgId(int cid) throws SQLException{
+		int m = -1;
+		ps = conn.prepareStatement("SELECT MSGID FROM MAYHAVE WHERE CID = ?");
+		ps.setInt(1, cid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			m = rs.getInt(1);
+		return m;
+	}
+	
+	/*
+	 * Returns the comment's userid, else returns -1
+	 */
+	public int getCommentUser(int cid) throws SQLException{
+		int u = -1;
+		ps = conn.prepareStatement("SELECT COMMENTOR FROM COMMENT WHERE CID = ?");
+		ps.setInt(1, cid);
+		rs = ps.executeQuery();
+		if(rs.next())
+			u = rs.getInt(1);
+		return u;
+	}
+	
+	
+	/*
+	 * Returns a list of MSGIDs for user uid's homepage, else returns an empty list
+	 */
+	public List<Integer> getHomepagePosts(int uid) throws SQLException{
+		List<Integer> posts = new LinkedList<Integer>();
+		
+		
+		return posts;
+	}
+	
+	
+	/*
 	 * Returns TagId if tag exists, else returns -1
 	 */
 	public int tagCheck(String tag) throws SQLException{
@@ -551,7 +615,7 @@ public class PennbookSQL {
 	/*
 	 * Adds a Comment to a message mid from User uid with the value comment
 	 */
-	public void postComment(int mid, int uid, String comment) throws SQLException{
+	public int postComment(int mid, int uid, String comment) throws SQLException{
 		int cid = getNewCommentId();
 		ps = conn.prepareStatement("INSERT INTO COMMENT(CID, MSG, COMMENTOR) VALUES(?, ?, ?)");
 		ps.setInt(1, cid);
@@ -563,6 +627,7 @@ public class PennbookSQL {
 		ps.setInt(2, cid);
 		ps.execute();
 		ps.close();
+		return cid;
 	}
 	
 	/*
