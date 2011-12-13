@@ -25,7 +25,7 @@ public class PennbookSQL {
 			//This will load the MySQL driver
 			Class.forName("com.mysql.jdbc.Driver");
 			//Setup the connection with the DB
-			conn = DriverManager.getConnection("jdbc:mysql://10.204.49.255:3306/Pennbook?user=PENNBOOK&password=pennbook");			
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/Pennbook?user=PENNBOOK&password=pennbook");			
 		}
 		catch (Exception e){
 			throw e;
@@ -400,8 +400,6 @@ public class PennbookSQL {
 	public List<Integer> getHomepagePosts(int uid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
 		List<Integer> users = new LinkedList<Integer>();
-		int min = Integer.MAX_VALUE;
-		int max = Integer.MIN_VALUE;
 		users.add(uid);
 		ps = conn.prepareStatement("SELECT FID FROM FRIENDOF WHERE USERID = ?");
 		ps.setInt(1, uid);
@@ -412,16 +410,10 @@ public class PennbookSQL {
 			ps = conn.prepareStatement("SELECT MSGID FROM MESSAGE WHERE SENDER = ?");
 			ps.setInt(1, user);
 			rs = ps.executeQuery();
-			while(rs.next()){
-				int temp = rs.getInt(1);
-				if(temp > max)
-					max = temp;
-				if(temp < min)
-					min = temp;
-				posts.add(temp);
-			}
+			while(rs.next())
+				posts.add(rs.getInt(1));
 		}	
-		quick_srt(posts, min, max);
+		quick_srt(posts, 0, posts.size()-1);
 		while(posts.size() > 20)
 			posts.remove(0);
 		return posts;
