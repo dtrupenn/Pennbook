@@ -55,12 +55,30 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 				.replaceAll(">", "&gt;");
 	}
 
+	public String followUser(String followerID, String followedID) {
+		int UID = Integer.valueOf(followerID);
+		int FID = Integer.valueOf(followedID);
+		try {
+			psql.addFriend(UID, FID);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return followedID;
+	}
+	
 	@Override
-	public String searchFor(String name) throws IllegalArgumentException {
-		// Escape data from the client to avoid cross-site script vulnerabilities.
-		name = escapeHtml(name);
-
-		return name; // TODO: fix me to return UID
+	public String searchForUser(String name) {
+		String userIDs = "";
+		
+		try {
+			List<Integer> listOfUserIDs = psql.uSearch(name);
+			for (int userID : listOfUserIDs)
+				userIDs = userIDs + userID + "\t";
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return userIDs;
 	}
 
 	@Override

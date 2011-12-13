@@ -6,11 +6,9 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Cookies;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class SearchBar extends Composite {
@@ -29,7 +27,7 @@ public class SearchBar extends Composite {
 		final Button searchButton = new Button("Go");
 		final TextBox searchField = new TextBox();
 		searchField.setText("Search for friend...");
-		final Label errorLabel = new Label();
+		searchField.selectAll();
 
 		// Focus the cursor on the name field when the app loads
 		searchField.setFocus(true);
@@ -83,22 +81,8 @@ public class SearchBar extends Composite {
 			 * Send the name from the nameField to the server and wait for a response.
 			 */
 			private void searchForName() {
-				// First, we validate the input.
-				errorLabel.setText("");
 				String textToSearch = searchField.getText();
-
-				// Then, we send the input to the server.
-				searchButton.setEnabled(false);
-
-				profileService.searchFor(textToSearch, new AsyncCallback<String>() {
-					public void onFailure(Throwable caught) {
-						// TODO
-					}
-
-					public void onSuccess(String result) {
-						// TODO: fucking figure out search #help
-					}
-				});
+				ContentPanel.replaceContent(new SearchResultsPage(profileService, textToSearch));
 			}
 		}
 

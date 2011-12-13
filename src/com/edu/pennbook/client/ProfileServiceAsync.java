@@ -6,7 +6,9 @@ public interface ProfileServiceAsync {
 	
 	void startUp(AsyncCallback<String> callback);
 	
-	void searchFor(String input, AsyncCallback<String> callback) throws IllegalArgumentException;
+	void followUser(String followerID, String followedID, AsyncCallback<String> callback);
+	
+	void searchForUser(String input, AsyncCallback<String> callback);
 
 	void attemptLogin(String username, String password, AsyncCallback<String> callback);
 	

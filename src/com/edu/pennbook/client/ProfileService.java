@@ -35,8 +35,10 @@ public interface ProfileService extends RemoteService {
 	}
 	
 	String startUp();
+	
+	String followUser(String followerID, String followedID);
 
-	String searchFor(String name) throws IllegalArgumentException;
+	String searchForUser(String name);
 	
 	String attemptLogin(String username, String password);
 

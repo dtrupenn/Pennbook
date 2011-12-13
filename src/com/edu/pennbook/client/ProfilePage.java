@@ -65,6 +65,32 @@ public class ProfilePage extends Composite {
 		userInfoPanel.add(userTrueName);
 		userInfoPanel.add(userEmailAddress);
 		userInfoPanel.add(userInfo);
+		
+		if (!profileUserID.equals(userID)) {
+			final Button followUser = new Button();
+			
+			class followHandler implements ClickHandler {
+				@Override
+				public void onClick(ClickEvent event) {
+					profileService.followUser(userID, profileUserID, new AsyncCallback<String>() {
+						@Override
+						public void onFailure(Throwable caught) {
+							// FAIL
+						}
+						
+						@Override
+						public void onSuccess(String result) {
+							ContentPanel.replaceContent(new ProfilePage(profileService, result));
+						}
+					});
+				}
+			}
+			
+			followHandler fHandler = new followHandler();
+			followUser.addClickHandler(fHandler);
+			
+			userInfoPanel.add(followUser);
+		}
 
 		final VerticalPanel postsPanel = new VerticalPanel();
 
@@ -355,7 +381,7 @@ public class ProfilePage extends Composite {
 
 		final VerticalPanel friendsPanel = new VerticalPanel();
 		
-		HTML title = new HTML(spacer + "<strong>Friends:</strong>");
+		HTML title = new HTML(spacer + "<strong>Following:</strong>");
 		friendsPanel.add(title);
 		
 		profileService.getFriendsOfUser(profileUserID, new AsyncCallback<String>() {
