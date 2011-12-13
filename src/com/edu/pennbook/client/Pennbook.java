@@ -54,7 +54,7 @@ public class Pennbook implements EntryPoint {
 			ContentPanel.replaceContent(new LoginPage(profileService));
 		} else {
 			TopPanel.replaceContent(new SearchBar(profileService));
-			ContentPanel.replaceContent(new ProfilePage(profileService));
+			ContentPanel.replaceContent(new ProfilePage(profileService, currUID));
 		}
 	}
 }

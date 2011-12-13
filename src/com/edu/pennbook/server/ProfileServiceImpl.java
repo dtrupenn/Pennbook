@@ -17,6 +17,7 @@ package com.edu.pennbook.server;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.regex.*;
 
 import com.edu.pennbook.server.PennbookSQL;
@@ -173,5 +174,45 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 			e.printStackTrace();
 		}
 		return email;
+	}
+	
+	public String getHomepagePostsFromUID(String userID) {
+		// List<Integer> homepagePostIds = psql.get
+		// TODO
+		return "";
+	}
+	
+	public String getProfilePostsFromUID(String userID) {
+		int UID = Integer.valueOf(userID);
+		String profilePosts = "";
+		try {
+			List<Integer> profilePageIds = psql.getWallPosts(UID);
+			for(int i: profilePageIds) {
+				// TODO: get message string from id
+				profilePosts = profilePosts + i + "\t";
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return profilePosts;
+	}
+	
+	public String addNewPost(String fromID, String toID, String message) {
+		int TID = Integer.valueOf(toID);
+		int FID = Integer.valueOf(fromID);
+		int MID = 0;
+		
+		try {
+			MID = psql.postMsg(TID, FID, message);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return MID + "";
+	}
+	
+	public String addNewComment(String fromID, String messageID) {
+		return "";
 	}
 }

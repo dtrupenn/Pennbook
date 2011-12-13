@@ -49,4 +49,10 @@ public interface ProfileService extends RemoteService {
 			String affiliation, String birthday);
 	
 	String getUsernameFromUID(String userID);
+	
+	String getHomepagePostsFromUID(String userID);
+
+	String getProfilePostsFromUID(String userID);
+	
+	String addNewPost(String fromID, String toID, String message);
 }

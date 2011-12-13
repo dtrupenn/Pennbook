@@ -19,4 +19,10 @@ public interface ProfileServiceAsync {
 			String affiliation, String birthday, AsyncCallback<String> callback);
 	
 	void getUsernameFromUID(String userID, AsyncCallback<String> callback);
+	
+	void getHomepagePostsFromUID(String userID, AsyncCallback<String> callback);
+
+	void getProfilePostsFromUID(String userID, AsyncCallback<String> asyncCallback);
+	
+	void addNewPost(String fromID, String toID, String message, AsyncCallback<String> asyncCallback);
 }

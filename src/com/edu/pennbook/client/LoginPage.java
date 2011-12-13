@@ -44,7 +44,8 @@ public class LoginPage extends Composite {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+						noSuchUserDialog.setText("Login failed, please try again.");
+						noSuchUserDialog.center();
 					}
 
 					@Override
@@ -112,7 +113,6 @@ public class LoginPage extends Composite {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
 						notRegistrableDialog.setText("Registration failed; please try again.");
 						notRegistrableDialog.center();
 					}

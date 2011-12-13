@@ -14,9 +14,7 @@ public class HomePage extends Composite {
 		
 		// all posts from friends and self
 		VerticalPanel postHolder = new VerticalPanel();
-		
-		// for ()
-		
+				
 		initWidget(homepageMainPanel);
 	}
 }

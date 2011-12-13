@@ -17,7 +17,7 @@ public class SettingsPage extends Composite {
 		final Label firstNameLabel = new Label("First name:");
 		final Label lastNameLabel = new Label("Last name:");
 		final Label affiliationLabel = new Label("Affiliation:");
-		final Label birthdayLabel = new Label("Birthday:");
+		final Label birthdayLabel = new Label("Birthday: (MM/DD/YYYY)");
 		
 		final TextBox firstNameBox = new TextBox();
 		final TextBox lastNameBox = new TextBox();
