@@ -12,7 +12,7 @@ public class test {
 		PennbookSQL psql = new PennbookSQL();
 		try {
 			psql.startup();
-			System.out.println(psql.getTaggedPosts(1));
+			System.out.println(psql.getFirstName(1));
 			psql.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
