@@ -57,4 +57,20 @@ public interface ProfileService extends RemoteService {
 	String addNewPost(String fromID, String toID, String message);
 	
 	String addNewComment(String fromID, String messageID, String comment);
+	
+	String getMessageText(String messageID);
+	
+	String getCommentText(String commentID);
+	
+	String getMessageAuthor(String messageID);
+	
+	String getNumberOfLikes(String messageID);
+	
+	String addLike(String messageID, String userID);
+	
+	String getCommentsOnMessage(String messageID);
+	
+	String getCommentAuthor(String commentID);
+	
+	String getFriendsOfUser(String userID);
 }

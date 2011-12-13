@@ -44,8 +44,10 @@ public class SettingsPage extends Composite {
 				final String[] helper = result.split(",");
 				firstNameBox.setText(helper[0]);
 				lastNameBox.setText(helper[1]);
-				affiliationBox.setText(helper[2]);
-				birthdayBox.setText(helper[3]);
+				if (helper.length > 2)
+					affiliationBox.setText(helper[2]);
+				if (helper.length > 3)
+					birthdayBox.setText(helper[3]);
 			}
 		});
 		

@@ -27,4 +27,20 @@ public interface ProfileServiceAsync {
 	void addNewPost(String fromID, String toID, String message, AsyncCallback<String> asyncCallback);
 	
 	void addNewComment(String fromID, String messageID, String comment, AsyncCallback<String> asyncCallback);
+	
+	void getMessageText(String messageID, AsyncCallback<String> asyncCallback);
+	
+	void getCommentText(String commentID, AsyncCallback<String> asyncCallback);
+	
+	void getMessageAuthor(String messageID, AsyncCallback<String> asyncCallback);
+	
+	void getNumberOfLikes(String messageID, AsyncCallback<String> asyncCallback);
+	
+	void addLike(String messageID, String userID, AsyncCallback<String> asyncCallback);
+	
+	void getCommentsOnMessage(String messageID, AsyncCallback<String> asyncCallback);
+	
+	void getCommentAuthor(String commentID, AsyncCallback<String> asyncCallback);
+	
+	void getFriendsOfUser(String userID, AsyncCallback<String> asyncCallback);
 }

@@ -58,14 +58,6 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 
 	@Override
 	public String searchFor(String name) throws IllegalArgumentException {
-		// Verify that the input is valid. 
-		if (!FieldVerifier.isValidName(name)) {
-			// If the input is not valid, throw an IllegalArgumentException back to
-			// the client.
-			throw new IllegalArgumentException(
-					"Name must be at least 4 characters long");
-		}
-
 		// Escape data from the client to avoid cross-site script vulnerabilities.
 		name = escapeHtml(name);
 
@@ -127,13 +119,17 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		try {
 			userAttributes = psql.getFirstName(UID);
 			userAttributes = userAttributes + "," + psql.getLastName(UID);
-			userAttributes = userAttributes + "," + psql.getAffiliation(UID) + ",";
-			Timestamp birthday = psql.getBDay(UID); 
-			if (birthday.toString() != null) {
-				String[] part1 = birthday.toString().split(" ");
-				String[] part2 = part1[0].split("-"); // format: yyyy, mm, dd
-				userAttributes = userAttributes + part2[1] + "/" + part2[2] + "/" + part2[0]; // TODO
-			} 
+			if (psql.getAffiliation(UID) != null) {
+				userAttributes = userAttributes + "," + psql.getAffiliation(UID);
+			}
+			if (psql.getBDay(UID) != null) {
+				Timestamp birthday = psql.getBDay(UID); 
+				if (birthday.toString() != null) {
+					String[] part1 = birthday.toString().split(" ");
+					String[] part2 = part1[0].split("-"); // format: yyyy, mm, dd
+					userAttributes = userAttributes + "," + part2[1] + "/" + part2[2] + "/" + part2[0];
+				} 
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -146,19 +142,23 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		int UID = Integer.valueOf(userID);
 		try { // if it is not the current fname/lname/aff/bday... update it!
 			String currFname = psql.getFirstName(UID);
-			if (!currFname.equals(fname))
+			if (!currFname.equals(fname) && !fname.equals(""))
 				psql.updateFirstName(UID, fname);
 			String currLname = psql.getLastName(UID);
-			if (!currLname.equals(lname))
+			if (!currLname.equals(lname) && !lname.equals(""))
 				psql.updateLastName(UID, lname);
 			String currAff = psql.getAffiliation(UID);
-			if (!currAff.equals(affiliation))
+			if (currAff == null || !currAff.equals(affiliation))
 				psql.updateAffiliation(UID, affiliation);
-			Timestamp currBday = psql.getBDay(UID);
 			String[] parts = birthday.split("/");
-			Timestamp bday = new Timestamp(Integer.valueOf(parts[2]), Integer.valueOf(parts[1]), Integer.valueOf(parts[0]), 0, 0, 0, 0);
-			if(!currBday.toString().equals(bday.toString()))
-				psql.updateBDay(UID, bday);
+			if (parts.length == 3) {
+				Timestamp bday = new Timestamp(Integer.valueOf(parts[2]), Integer.valueOf(parts[1]), Integer.valueOf(parts[0]), 0, 0, 0, 0);
+				if (psql.getBDay(UID) != null)
+					if(!psql.getBDay(UID).toString().equals(bday.toString()))
+						psql.updateBDay(UID, bday);
+				else
+					psql.updateBDay(UID, bday);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -188,7 +188,6 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		try {
 			List<Integer> profilePageIds = psql.getWallPosts(UID);
 			for(int i: profilePageIds) {
-				// TODO: get message string from id
 				profilePosts = profilePosts + i + "\t";
 			}
 		} catch (SQLException e) {
@@ -215,14 +214,113 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	public String addNewComment(String fromID, String messageID, String comment) {
 		int FID = Integer.valueOf(fromID);
 		int MID = Integer.valueOf(messageID);
+		int CID = 0;
 		
 		try {
-			psql.postComment(MID, FID, comment);
+			CID = psql.postComment(MID, FID, comment);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return "Fail";
 		}
+		
+		return CID + "";
+	}
+	
+	public String getMessageText(String messageID) {
+		int MID = Integer.valueOf(messageID);
+		String messageText = "";
+		try {
+			messageText = psql.getMsgString(MID);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return messageText;
+	}
+	
+	public String getCommentText(String commentID) {
+		int CID = Integer.valueOf(commentID);
+		String commentText = "";
+		try {
+			commentText = psql.getCommentString(CID);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return commentText;
+	}
+	
+	public String getCommentAuthor(String commentID) {
+		int CID = Integer.valueOf(commentID);
+		int FID = 0;
+		try {
+			FID = psql.getCommentUser(CID);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return FID + "";
+	}
+	
+	public String getMessageAuthor(String messageID) {
+		int MID = Integer.valueOf(messageID);
+		int FID = 0;
+		try {
+			FID = psql.getMsgSender(MID);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return FID + "";
+	}
+	
+	public String getNumberOfLikes(String messageID) {
+		int MID = Integer.valueOf(messageID);
+		int numLikes = 0;
+		try {
+			numLikes = psql.getAdmirations(MID).size();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return numLikes + "";
+	}
+	
+	public String addLike(String messageID, String userID) {
+		int FID = Integer.valueOf(userID);
+		int MID = Integer.valueOf(messageID);
+		int newNumLikes = 0;
+		
+		try {
+			if(!psql.getAdmirations(MID).contains(FID))
+				psql.admire(FID, MID);
+			newNumLikes = psql.getAdmirations(MID).size();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return newNumLikes + "";
+	}
+	
+	public String getCommentsOnMessage(String messageID) {
+		int MID = Integer.valueOf(messageID);
+		String commentIDs = "";
+		try {
+			List<Integer> listOfCmts = psql.getMsgComments(MID);
+			for (Integer i : listOfCmts) {
+				commentIDs = commentIDs + i + "\t";
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return commentIDs;
+	}
 
-		return "Success";
+	public String getFriendsOfUser(String userID) {
+		int UID = Integer.valueOf(userID);
+		String allFriends = "";	
+		try {
+			List<Integer> listOfFriendIDs = psql.getFriends(UID);
+			for (int friendID : listOfFriendIDs)
+				allFriends = allFriends + friendID + "\t";
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return allFriends;
 	}
 }
