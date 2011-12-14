@@ -3,7 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" output="test-classes" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/hawka/Documents/Folder/Academic/College/Junior Fall/212/Pennbook/mysql-connector-java-5.1.18-bin.jar"/>
+	<classpathentry kind="lib" path="/Users/dan/Documents/UPenn/Junior Year/Fall/MKSE 212/Pennbook/mysql-connector-java-5.1.18-bin.jar"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER/GWT"/>
+	<classpathentry kind="lib" path="/Users/dan/Documents/UPenn/Junior Year/Fall/MKSE 212/Pennbook/hadoop-core-0.20.203.0.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

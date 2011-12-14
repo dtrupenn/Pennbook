@@ -9,7 +9,12 @@ import java.sql.Statement;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
@@ -825,6 +830,29 @@ public class PennbookSQL {
 		ps.close();
 		rs.close();
 		return results;
+	}
+	
+	public void printFriendOfFile(){
+		try {
+			Writer out = new OutputStreamWriter(new FileOutputStream("input.txt"));
+			ps = conn.prepareStatement("SELECT * FROM FRIENDOF ORDER BY USERID");
+			rs = ps.executeQuery();
+			while(rs.next())
+				out.write(String.valueOf(rs.getInt(1)) + "\t" + String.valueOf(rs.getInt(2)) + "\n");
+			out.close();
+			ps.close();
+			rs.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	/*

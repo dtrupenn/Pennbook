@@ -18,9 +18,8 @@ public class test {
 		PennbookSQL psql = new PennbookSQL();
 		try {
 			psql.startup();
-			System.out.println(psql.getBDay(1));
-			psql.updateBDay(1, "1991-12-12 00:00:00");
-			System.out.println(psql.getBDay(1));
+			psql.printFriendOfFile();
+			System.out.println(psql.getWallPosts(1));
 			psql.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
