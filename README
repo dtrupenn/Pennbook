@@ -1,15 +1,3 @@
-To-Do:
--Set up sql schema DONE
--Run on mysql local DONE
--Create Java code to work with specified schema in local mysql repository DONE
--Create friend recommendations algo, friend visualization algo, and create search algo (Third Done)
--Learn how to use GWT, Apache Tomcat servlets DONE
-
-username is the email because we are lazy. 
-
-Need to do:
-Friendrecommend, FriendVisualization, EC2 setup for mysql, EC2 setup for Tomcat
-
 Full Name: Daniel Trujillo
 SEAS login: dtru
 
@@ -17,14 +5,57 @@ Full Name: Amalia Hawkins
 SEAS login: hawka
 
 Description of features implemented:
+We were able to implement a Pennbook site with a proper login page that allows a user to login through a username and password combo (hashed SHA-1) and sign up for the site by input their personal data. State of the current user is kept by a cookie and auto refreshes the homepage every 30 seconds. Are allowed to add interests, post statuses, post on other user's walls, follow users using directed edges for User relations, search for users(via username, lastname, or firstname), messages through tags, and interests. Can change the user's attributes including: First Name, Last Name, Affiliation, and Birthday. Can look at your own profile or other users profiles (by clicking on other user's name). Can add interests in personal profile and view your own posts in chronological order. Can view posts from you and users you follow on homepage in chronological order. Finally can logout of system and sign in as different user.
+
 
 Extra credits claimed:
 -Added searchable Tags to messages
 -Added likes to messages
+-Searchable interests
 
 List of source files included:
+src/com/edu/pennbook/client/ContentPanel.java
+src/com/edu/pennbook/client/HomePage.java
+src/com/edu/pennbook/client/LoginPage.java
+src/com/edu/pennbook/client/Pennbook.java
+src/com/edu/pennbook/client/ProfilePage.java
+src/com/edu/pennbook/client/ProfileService.java
+src/com/edu/pennbook/client/ProfileServiceAsync.java
+src/com/edu/pennbook/client/SearchBar.java
+src/com/edu/pennbook/client/SearchResultsPage.java
+src/com/edu/pennbook/client/SettingsPage.java
+src/com/edu/pennbook/client/TopPanel.java
+src/com/edu/pennbook/PennbookDiff1Mapper.java
+src/com/edu/pennbook/PennbookDiff1Reducer.java
+src/com/edu/pennbook/PennbookDiff2Mapper.java
+src/com/edu/pennbook/PennbookDiff2Reducer.java
+src/com/edu/pennbook/PennbookDriver.java
+src/com/edu/pennbook/PennbookInitMapper.java
+src/com/edu/pennbook/PennbookInitReducer.java
+src/com/edu/pennbook/PennbookIterMapper.java
+src/com/edu/pennbook/PennbookIterReducer.java
+src/com/edu/pennbook/server/PennbookSQL.java
+src/com/edu/pennbook/server/ProfileServiceImpl.java
+src/com/edu/pennbook/shared/FieldVerifier.java
+src/com/edu/pennbook/test.java
+warbuilder.xml
+pennbook.sql (schema setup)
+sample.sql (sample values)
 
 Outside sources used:
+mysql.com
+aws.amazon.com (ec2 port connections)
+http://www.slideshare.net/njuneja/ajax-and-gwt
+http://www.malisphoto.com/tips/tomcatonosx.html (installing tomcat)
+http://code.google.com/p/gwt-examples/wiki/project_MySQLConn#Table_of_Contents (mysql/gwt example)
+http://code.google.com/p/gwt-examples/wiki/gwtTomcat (gwt/tomcat example)
+http://www.samstarling.co.uk/2010/10/installing-mysql-on-an-ec2-micro-instance/
+(setting up mysql on ec2)
+
 
 Special instructions for building or running:
 -Define classpath for mysql driver and GWT version.
+-Change mysql connection path since EC2 node has been terminated to either local host or other ip address hosting mysql(in which case you must specify port 3306) and create user PENNBOOK with password pennbook (or modify said file in src/..../PennbookSQL.java startup().
+-Run pennbook.sql to set up schema in mysql
+-Can run sample.sql to populate mysql db
+-Run warbuilder if you wish to compile source jar into .war file to run on Tomcat.

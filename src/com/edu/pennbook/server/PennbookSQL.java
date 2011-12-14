@@ -22,17 +22,22 @@ import java.text.SimpleDateFormat;
 
 
 public class PennbookSQL {
+	//Creates date format for posting msgs and comments
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	//Holds connection to mysql db
 	private Connection conn = null;
+	//Is used to create mysql queries
 	private Statement statement = null;
+	//Is used to create prepares mysql queries
 	private PreparedStatement ps = null;
+	//Is used to return mysql query returns
 	private ResultSet rs = null;
 
 	public void startup() throws Exception {
 		try {
 			//This will load the MySQL driver
 			Class.forName("com.mysql.jdbc.Driver");
-			//Setup the connection with the DB
+			//Setup the connection with the DB with db_type(mysql):ec2_IP:Port/Project?user=username&password=password
 			conn = DriverManager.getConnection("jdbc:mysql://50.19.41.38:3306/Pennbook?user=PENNBOOK&password=pennbook");			
 		}
 		catch (Exception e){
@@ -44,7 +49,9 @@ public class PennbookSQL {
 	 * Executes query provided in parameters
 	 */
 	public void execute(String query) throws SQLException{
+		//Creates a statement
 		statement = conn.createStatement();
+		//Executes said statement
 		statement.execute(query);
 		//Closes off statement after being used
 		statement.close();
@@ -56,12 +63,12 @@ public class PennbookSQL {
 	public int getNewUserID() throws SQLException{
 		int id = 0;
 		statement = conn.createStatement();
-		//Query returns max UserId value
+		//Query returns max UserId value from UserId
 		ResultSet result = statement.executeQuery("SELECT MAX(USERID) FROM USERS");
 		if(result.next())
 			id = result.getInt(1) + 1;
-		statement.close();
-		result.close();
+		statement.close(); //Closes statement
+		result.close(); //Closes result
 		return id;
 	}
 
@@ -71,11 +78,11 @@ public class PennbookSQL {
 	public int getNewMsgId() throws SQLException{
 		int id = 0;
 		statement = conn.createStatement();
-		//Query retunrs max UserId value
+		//Query returns max UserId value from Message
 		ResultSet result = statement.executeQuery("SELECT MAX(MSGID) FROM MESSAGE");
 		if(result.next())
 			id = result.getInt(1) + 1;
-		statement.close();
+		statement.close(); //Closes statement
 		result.close();
 		return id;
 	}

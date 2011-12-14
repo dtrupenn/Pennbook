@@ -2,11 +2,8 @@ To-Do:
 -Set up sql schema DONE
 -Run on mysql local DONE
 -Create Java code to work with specified schema in local mysql repository DONE
--Create friend recommendations algo, create search algo (can be done kinda easily through sql) (Half Done)
--Learn how to use GWT, Apache Tomcat servlets (HALF DONE)
-
-Notes:
--Create html form for user sign up at Pennbook index.html page to push to Apache Tomcat servlet.
+-Create friend recommendations algo, friend visualization algo, and create search algo (Third Done)
+-Learn how to use GWT, Apache Tomcat servlets DONE
 
 username is the email because we are lazy. 
 
