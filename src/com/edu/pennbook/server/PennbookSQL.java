@@ -253,7 +253,7 @@ public class PennbookSQL {
 	 */
 	public List<Integer> getWallPosts(int uid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT MSGID FROM Message WHERE SENDER = ?");
+		ps = conn.prepareStatement("SELECT MSGID FROM Message WHERE RECIEVER = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		while(rs.next())
