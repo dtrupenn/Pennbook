@@ -541,7 +541,7 @@ public class PennbookSQL {
 		int newid = getNewUserID();
 		try {
 			String pword = SHA1(password);
-			ps = conn.prepareStatement("INSERT INTO Users(UserId, Username, FirstName, LastName, Password) VALUES(?, ?, ?, ?, ?)");
+			ps = conn.prepareStatement("INSERT INTO USERS(USERID, USERNAME, FIRSTNAME, LASTNAME, PASSWORD) VALUES(?, ?, ?, ?, ?)");
 			ps.setInt(1, newid);
 			ps.setString(2, username);
 			ps.setString(3, fname);
@@ -577,13 +577,13 @@ public class PennbookSQL {
 	 */
 	public int postMsg(int uid, int fid, String msg) throws SQLException{
 		int m = getNewMsgId();
-		ps = conn.prepareStatement("INSERT INTO Message(MsgID, Sender, Reciever, Msg) VALUES(?, ?, ?, ?)");
+		ps = conn.prepareStatement("INSERT INTO MESSAGE(MSGID, SENDER, RECIEVER, MSG) VALUES(?, ?, ?, ?)");
 		ps.setInt(1, m);
 		ps.setInt(2, uid);
 		ps.setInt(3, fid);
 		ps.setString(4, msg);
 		ps.execute();
-		ps = conn.prepareStatement("INSERT INTO POST(UserId, MsgId) VALUES(?, ?)");
+		ps = conn.prepareStatement("INSERT INTO POST(USERID, MSGID) VALUES(?, ?)");
 		ps.setInt(1, uid);
 		ps.setInt(2, m);
 		ps.execute();
@@ -603,7 +603,7 @@ public class PennbookSQL {
 		int t = tagCheck(tag);
 		if(t == -1)
 			t = getNewTagId();
-		ps = conn.prepareStatement("INSERT INTO HashTag(TagID, Tag) VALUES (?, ?)");
+		ps = conn.prepareStatement("INSERT INTO HASHTAG(TAGID, TAG) VALUES (?, ?)");
 		ps.setInt(1, t);
 		ps.setString(2, tag);
 		ps.execute();
@@ -621,25 +621,35 @@ public class PennbookSQL {
 	 * Adds an Interest to Interest table if not already there AND adds user to FanOf table for interest
 	 */
 	public int addInterest(int uid, String interest) throws SQLException{
+		ps = conn.prepareStatement("SELECT IID FROM INTEREST AS I LEFT JOIN FANOF AS F ON I.IID = F.IID WHERE USERID = ? AND INTEREST = ?");
+		ps.setInt(1, uid);
+		ps.setString(2, interest);
+		rs = ps.executeQuery();
+		if(rs.next())
+			return -1;
 		int i = getNewInterestId();
-		ps = conn.prepareStatement("SELECT IId FROM Interest WHERE Interest LIKE ?");
+		ps = conn.prepareStatement("SELECT IID FROM INTEREST WHERE INTEREST LIKE ?");
 		ps.setString(1, interest);
 		rs = ps.executeQuery();
 		if(rs.next())
 			i = rs.getInt(1);
-		else
-			execute("INSERT INTO Interest(IId, Interest) VALUES(" + String.valueOf(i) + ",'" + interest +"')");
+		else{
+			ps = conn.prepareStatement("INSERT INTO INTEREST(IID, INTEREST) VALUES(?, ?)");
+			ps.setInt(1, i);
+			ps.setString(2, interest);
+			ps.execute();
+		}
 		float strength = 1;
-		ps = conn.prepareStatement("SELECT COUNT(IId) FROM FanOf WHERE UserId = ?");
+		ps = conn.prepareStatement("SELECT COUNT(IId) FROM FANOF WHERE USERID = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		if(rs.next()){
 			strength = (float) (1.0/rs.getInt(1));
-			ps = conn.prepareStatement("UPDATE FanOf SET Strenght = ? WHERE UserId = ?");
+			ps = conn.prepareStatement("UPDATE FANOF SET STRENGTH = ? WHERE USERID = ?");
 			ps.setFloat(1, strength);
 			ps.setInt(2, uid);
 		}
-		ps = conn.prepareStatement("INSERT INTO FanOf(UserId, IId, Strength) VALUES(?,?,?)");
+		ps = conn.prepareStatement("INSERT INTO FANOF(USERID, IID, STRENGTH) VALUES(?,?,?)");
 		ps.setInt(1, uid);
 		ps.setInt(2, i);
 		ps.setFloat(3, strength);
