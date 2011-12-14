@@ -49,7 +49,7 @@ public class ProfilePage extends Composite {
 			}
 		});
 		
-		profileService.getBirthdayFromUID(userID, new AsyncCallback<String>() {
+		profileService.getBirthdayFromUID(profileUserID, new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				// FAIL
