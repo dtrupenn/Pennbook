@@ -28,7 +28,7 @@ public class PennbookSQL {
 			//This will load the MySQL driver
 			Class.forName("com.mysql.jdbc.Driver");
 			//Setup the connection with the DB
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/Pennbook?user=PENNBOOK&password=pennbook");			
+			conn = DriverManager.getConnection("jdbc:mysql://50.19.41.38:3306/Pennbook?user=PENNBOOK&password=pennbook");			
 		}
 		catch (Exception e){
 			throw e;
@@ -257,7 +257,7 @@ public class PennbookSQL {
 	 */
 	public List<Integer> getWallPosts(int uid) throws SQLException{
 		List<Integer> posts = new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT MSGID FROM Message WHERE RECIEVER = ?");
+		ps = conn.prepareStatement("SELECT MSGID FROM MESSAGE WHERE RECIEVER = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		while(rs.next())
