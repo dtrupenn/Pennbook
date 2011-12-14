@@ -615,7 +615,7 @@ public class PennbookSQL {
 		ps.execute();
 		ps = conn.prepareStatement("INSERT INTO HASA(MSGID, TAGID) VALUES (?, ?)");
 		ps.setInt(1, mid);
-		ps.setInt(1, t);
+		ps.setInt(2, t);
 		ps.execute();
 		ps.close();
 		rs.close();
