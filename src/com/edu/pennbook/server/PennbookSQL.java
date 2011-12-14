@@ -553,7 +553,7 @@ public class PennbookSQL {
 			ps.setString(5, pword);
 			ps.execute();
 			ps.close();
-			postMsg(newid, newid, fname + "just created a Pennbook account! =D");
+			postMsg(newid, newid, fname + " just created a Pennbook account! =D");
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
