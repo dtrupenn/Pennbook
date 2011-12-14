@@ -621,7 +621,7 @@ public class PennbookSQL {
 	 * Adds an Interest to Interest table if not already there AND adds user to FanOf table for interest
 	 */
 	public int addInterest(int uid, String interest) throws SQLException{
-		ps = conn.prepareStatement("SELECT IID FROM INTEREST AS I LEFT JOIN FANOF AS F ON I.IID = F.IID WHERE USERID = ? AND INTEREST = ?");
+		ps = conn.prepareStatement("SELECT * FROM INTEREST AS I LEFT JOIN FANOF AS F ON I.IID = F.IID WHERE USERID = ? AND INTEREST LIKE ?");
 		ps.setInt(1, uid);
 		ps.setString(2, interest);
 		rs = ps.executeQuery();
