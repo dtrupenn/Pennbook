@@ -441,4 +441,17 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		}
 		return birthday;
 	}
+	
+	public String getMessageReciever(String messageID) {
+		int MID = Integer.valueOf(messageID);
+		int reciever = 0;
+		
+		try {
+			reciever = psql.getMsgReciever(MID);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return reciever + "";
+	}
 }

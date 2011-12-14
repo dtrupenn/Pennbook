@@ -62,10 +62,38 @@ public class HomePage extends Composite {
 								}
 
 								@Override
-								public void onSuccess(String result) {
-									String[] attributes = result.split(",");
-									if(attributes.length < 2) return;
-									author.setHTML("<br><strong>" + attributes[0] + " " + attributes[1] + "</strong>");
+								public void onSuccess(String senderResult) {
+									final String[] senAttributes = senderResult.split(",");
+									if(senAttributes.length < 2) return;
+									
+									profileService.getMessageReciever(messageID, new AsyncCallback<String>() {
+										@Override
+										public void onFailure(Throwable caught) {
+											// FAIL
+										}
+										@Override
+										public void onSuccess(String recieverID) {
+											if (recieverID.equals(authorID)) {
+												author.setHTML("<br><strong>" + senAttributes[0] + " " + senAttributes[1] + "</strong>");
+												return;
+											}
+												
+											profileService.getUserAttributesFromUID(recieverID, new AsyncCallback<String>() {
+												@Override
+												public void onFailure(Throwable caught) {
+													// FAIL
+												}
+
+												@Override
+												public void onSuccess(String recieverResult) {
+													String[] recAttributes = recieverResult.split(",");
+													if(recAttributes.length < 2) return;
+													author.setHTML("<br><strong>" + senAttributes[0] + " " + senAttributes[1] + "</strong> to " +
+															"<strong>" + recAttributes[0] + " " + recAttributes[1] + "</strong>");
+												}
+											});
+										}
+									});
 								}
 							});
 

@@ -89,4 +89,6 @@ public interface ProfileService extends RemoteService {
 	String getBirthdayFromUID(String userID);
 	
 	String updateBirthdayFromUID(String userID, String birthday);
+	
+	String getMessageReciever(String messageID);
 }
