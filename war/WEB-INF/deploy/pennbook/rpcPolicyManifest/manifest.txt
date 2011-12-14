@@ -1,2 +1,3 @@
 # Module pennbook
 # RPC service class, partial path of RPC policy file
+com.edu.pennbook.client.ProfileService, A44AA3A9357775366685899D8181EA19.gwt.rpc
