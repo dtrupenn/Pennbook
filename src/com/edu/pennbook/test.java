@@ -1,5 +1,8 @@
 package com.edu.pennbook;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,10 +17,13 @@ public class test {
 		// TODO Auto-generated method stub
 		PennbookSQL psql = new PennbookSQL();
 		try {
-			psql.startup();
-			System.out.println(psql.getFirstName(psql.getMsgReciever(4)));
-			System.out.println(psql.getWallPosts(1));
-			psql.close();
+			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = new Date();
+			System.out.println(dateFormat.format(date));
+//			psql.startup();
+//			System.out.println(psql.getFirstName(psql.getMsgReciever(4)));
+//			System.out.println(psql.getWallPosts(1));
+//			psql.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

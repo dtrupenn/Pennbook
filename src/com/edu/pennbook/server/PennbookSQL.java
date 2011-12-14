@@ -6,15 +6,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 
 public class PennbookSQL {
+	private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	private Connection conn = null;
 	private Statement statement = null;
 	private PreparedStatement ps = null;
@@ -189,13 +192,13 @@ public class PennbookSQL {
 	}
 
 	//Returns the user's birthday if uid exists, null otherwise.
-	public Timestamp getBDay(int uid) throws SQLException{
-		Timestamp bday = null;
+	public String getBDay(int uid) throws SQLException{
+		String bday = null;
 		ps = conn.prepareStatement("SELECT BIRTHDAY FROM USERS WHERE USERID = ?");
 		ps.setInt(1, uid);
 		rs = ps.executeQuery();
 		if(rs.next())
-			bday = rs.getTimestamp(1);
+			bday = rs.getString(1);
 		rs.close();
 		ps.close();
 		return bday;
@@ -293,15 +296,15 @@ public class PennbookSQL {
 	}
 
 	/*
-	 * Returns the timestamp of message mid
+	 * Returns the String of date and time of message mid
 	 */
-	public Timestamp getMsgDate(int mid) throws SQLException{
-		Timestamp t = null;
+	public String getMsgDate(int mid) throws SQLException{
+		String t = null;
 		ps = conn.prepareStatement("SELECT DAT FROM POST WHERE MSGID = ?");
 		ps.setInt(1, mid);
 		rs = ps.executeQuery();
 		if(rs.next())
-			t = rs.getTimestamp(1);
+			t = rs.getString(1);
 		return t;
 	}
 
@@ -360,13 +363,13 @@ public class PennbookSQL {
 	/*
 	 * Returns the comment's string, else returns null
 	 */
-	public Timestamp getCommentDate(int cid) throws SQLException{
-		Timestamp time = null;
+	public String getCommentDate(int cid) throws SQLException{
+		String time = null;
 		ps = conn.prepareStatement("SELECT DAT FROM MAYHAVE WHERE CID = ?");
 		ps.setInt(1, cid);
 		rs = ps.executeQuery();
 		if(rs.next())
-			time = rs.getTimestamp(1);
+			time = rs.getString(1);
 		return time;
 	}
 
@@ -523,10 +526,10 @@ public class PennbookSQL {
 	/*
 	 * Updates user's birthday
 	 */
-	public void updateBDay(int uid, Timestamp bday) throws SQLException{
+	public void updateBDay(int uid, String bday) throws SQLException{
 		String fname = null;
 		ps = conn.prepareStatement("UPDATE USERS SET BIRTHDAY = ? WHERE USERID = ?");
-		ps.setTimestamp(1, bday);
+		ps.setString(1, bday);
 		ps.setInt(2, uid);
 		ps.executeUpdate();
 		ps = conn.prepareStatement("SELECT FIRSTNAME FROM USERS WHERE USERID = ?");
@@ -583,15 +586,17 @@ public class PennbookSQL {
 	 */
 	public int postMsg(int uid, int fid, String msg) throws SQLException{
 		int m = getNewMsgId();
+		Date dat = new Date();
 		ps = conn.prepareStatement("INSERT INTO MESSAGE(MSGID, SENDER, RECIEVER, MSG) VALUES(?, ?, ?, ?)");
 		ps.setInt(1, m);
 		ps.setInt(2, uid);
 		ps.setInt(3, fid);
 		ps.setString(4, msg);
 		ps.execute();
-		ps = conn.prepareStatement("INSERT INTO POST(USERID, MSGID) VALUES(?, ?)");
+		ps = conn.prepareStatement("INSERT INTO POST(USERID, MSGID, DAT) VALUES(?, ?, ?)");
 		ps.setInt(1, uid);
 		ps.setInt(2, m);
+		ps.setString(3, dateFormat.format(dat));
 		ps.execute();
 		if(msg.contains("#")){
 			String[] temp = msg.split("#");
@@ -645,20 +650,9 @@ public class PennbookSQL {
 			ps.setString(2, interest);
 			ps.execute();
 		}
-//		float strength = 1;
-//		ps = conn.prepareStatement("SELECT COUNT(IId) FROM FANOF WHERE USERID = ?");
-//		ps.setInt(1, uid);
-//		rs = ps.executeQuery();
-//		if(rs.next()){
-//			strength = (float) (1.0/rs.getInt(1));
-//			ps = conn.prepareStatement("UPDATE FANOF SET STRENGTH = ? WHERE USERID = ?");
-//			ps.setFloat(1, strength);
-//			ps.setInt(2, uid);
-//		}
 		ps = conn.prepareStatement("INSERT INTO FANOF(USERID, IID) VALUES(?,?)");
 		ps.setInt(1, uid);
 		ps.setInt(2, i);
-//		ps.setFloat(3, strength);
 		ps.execute();
 		ps.close();
 		rs.close();
@@ -670,14 +664,16 @@ public class PennbookSQL {
 	 */
 	public int postComment(int mid, int uid, String comment) throws SQLException{
 		int cid = getNewCommentId();
+		Date dat = new Date();
 		ps = conn.prepareStatement("INSERT INTO COMMENT(CID, MSG, COMMENTOR) VALUES(?, ?, ?)");
 		ps.setInt(1, cid);
 		ps.setString(2, comment);
 		ps.setInt(3, uid);
 		ps.execute();
-		ps = conn.prepareStatement("INSERT INTO MAYHAVE(MSGID, CID) VALUES(?, ?)");
+		ps = conn.prepareStatement("INSERT INTO MAYHAVE(MSGID, CID, DAT) VALUES(?, ?, )");
 		ps.setInt(1, mid);
 		ps.setInt(2, cid);
+		ps.setString(3, dateFormat.format(dat));
 		ps.execute();
 		ps.close();
 		return cid;
