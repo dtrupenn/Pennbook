@@ -1,7 +1,6 @@
 package com.edu.pennbook.server;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.regex.*;
 
@@ -226,7 +225,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 			for(int i: profilePageIds)
 				profilePosts = profilePosts + i + "\t";
 			if (profilePageIds.size() > 0)
-				profilePosts = profilePosts.substring(0, profilePosts.length()-2);
+				profilePosts = profilePosts.substring(0, profilePosts.length() - 1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -240,7 +239,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		int MID = 0;
 		
 		try {
-			MID = psql.postMsg(TID, FID, message);
+			MID = psql.postMsg(FID, TID, message);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

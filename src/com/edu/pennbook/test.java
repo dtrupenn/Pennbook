@@ -16,6 +16,7 @@ public class test {
 		try {
 			psql.startup();
 			System.out.println(psql.getFirstName(psql.getMsgReciever(4)));
+			System.out.println(psql.getWallPosts(1));
 			psql.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

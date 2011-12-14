@@ -63,6 +63,7 @@ public class HomePage extends Composite {
 								@Override
 								public void onSuccess(String result) {
 									String[] attributes = result.split(",");
+									if(attributes.length < 2) return;
 									author.setHTML("<br><strong>" + attributes[0] + " " + attributes[1] + "</strong>");
 								}
 							});

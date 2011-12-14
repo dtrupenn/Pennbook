@@ -197,8 +197,8 @@ public class ProfilePage extends Composite {
 				if (allPosts.length == 0) return;
 
 				String[] allPostsReversed = new String[allPosts.length];
-				for (int i = allPosts.length; i > 0; i--) {
-					allPostsReversed[i-1] = allPosts[allPosts.length - i];
+				for (int i = allPosts.length - 1; i >= 0; i--) {
+					allPostsReversed[i] = allPosts[allPosts.length - i - 1];
 				}
 
 				for (String postID : allPostsReversed) {
