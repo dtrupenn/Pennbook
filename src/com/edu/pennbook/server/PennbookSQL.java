@@ -436,8 +436,37 @@ public class PennbookSQL {
 			posts.remove(0);
 		return posts;
 	}
-
-
+	
+	
+	/*
+	 * Returns a list of online users uids
+	 */
+	public List<Integer> getOnlineUsers() throws SQLException{
+		List<Integer> usrs = new LinkedList();
+		ps = conn.prepareStatement("SELECT * FROM ONLINEUSERS");
+		rs = ps.executeQuery();
+		while(rs.next())
+			usrs.add(rs.getInt(1));
+		ps.close();
+		rs.close();
+		return usrs;
+	}
+	
+	/*
+	 * Returns a list of friend recommendations for a User from the provided uid
+	 */
+	public List<Integer> getFriendRecommendations(int uid) throws SQLException{
+		List<Integer> usrs = new LinkedList();
+		ps = conn.prepareStatement("SELECT RECOMMENDATION FROM FRIENDRECOMMENDATION WHERE USERID = ?");
+		ps.setInt(1, uid);
+		rs = ps.executeQuery();
+		while(rs.next())
+			usrs.add(rs.getInt(1));
+		ps.close();
+		rs.close();
+		return usrs;	
+	}
+	
 	/*
 	 * Returns TagId if tag exists, else returns -1
 	 */
@@ -686,6 +715,49 @@ public class PennbookSQL {
 		ps = conn.prepareStatement("INSERT INTO ADMIRE(USERID, MSGID) VALUES(?,?)");
 		ps.setInt(1, uid);
 		ps.setInt(2, mid);
+		ps.execute();
+		ps.close();
+	}
+	
+	/*
+	 * Adds provided uid to USERIDs on ONLINEFRIENDS table
+	 */
+	public void addOnlineUser(int uid) throws SQLException{
+		ps = conn.prepareStatement("INSERT INTO ONLINEUSERS(USERID) VALUES(?)");
+		ps.setInt(1, uid);
+		ps.execute();
+		ps.close();
+	}
+	
+	/*
+	 * Removes provided uid from USERIDs on ONLINEFRIENDS table
+	 */
+	public void removeOnlineUser(int uid) throws SQLException{
+		ps = conn.prepareStatement("DELETE FROM ONLINEUSERS WHERE USERID = ?");
+		ps.setInt(1, uid);
+		ps.execute();
+		ps.close();
+	}
+
+	/*
+	 * Adds provided List of uids to RECOMMENDATIONs on FRIENDRECOMMENDATION table
+	 */
+	public void addFriendRecommendations(int user, List<Integer> uids) throws SQLException{
+		for(Integer uid: uids){
+			ps = conn.prepareStatement("INSERT INTO ONLINEUSERS(USERID, RECOMMENDATION) VALUES(?, ?)");
+			ps.setInt(1, user);
+			ps.setInt(1, uid);
+			ps.execute();
+		}
+		ps.close();
+	}
+	
+	/*
+	 * Removes provided uid from USERIDs on ONLINEFRIENDS table
+	 */
+	public void removeFriendRecommendations(int uid) throws SQLException{
+		ps = conn.prepareStatement("DELETE FROM FRIENDRECOMMENDATION WHERE USERID = ?");
+		ps.setInt(1, uid);
 		ps.execute();
 		ps.close();
 	}
