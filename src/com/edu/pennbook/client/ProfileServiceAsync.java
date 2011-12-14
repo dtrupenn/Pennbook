@@ -61,4 +61,5 @@ public interface ProfileServiceAsync {
 	void updateBirthdayFromUID(String userID, String birthday, AsyncCallback<String> asyncCallback);
 	
 	void getMessageReciever(String messageID, AsyncCallback<String> asyncCallback);
+
 }
