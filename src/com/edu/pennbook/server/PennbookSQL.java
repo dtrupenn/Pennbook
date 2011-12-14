@@ -209,6 +209,8 @@ public class PennbookSQL {
 		rs = ps.executeQuery();
 		while(rs.next())
 			is.add(rs.getInt(1));
+		ps.close();
+		rs.close();
 		return is;
 	}
 	
@@ -219,6 +221,8 @@ public class PennbookSQL {
 		ps.setInt(1, iid);
 		if(rs.next())
 			i = rs.getString(1);
+		ps.close();
+		rs.close();
 		return i;
 	}
 
@@ -318,7 +322,7 @@ public class PennbookSQL {
 	 */
 	public int getMsgReciever(int mid) throws SQLException{
 		int reciever = -1;
-		ps = conn.prepareStatement("SELECT SENDER FROM MESSAGE WHERE MSGID = ?");
+		ps = conn.prepareStatement("SELECT RECIEVER FROM MESSAGE WHERE MSGID = ?");
 		ps.setInt(1, mid);
 		rs = ps.executeQuery();
 		if(rs.next())
@@ -639,20 +643,20 @@ public class PennbookSQL {
 			ps.setString(2, interest);
 			ps.execute();
 		}
-		float strength = 1;
-		ps = conn.prepareStatement("SELECT COUNT(IId) FROM FANOF WHERE USERID = ?");
-		ps.setInt(1, uid);
-		rs = ps.executeQuery();
-		if(rs.next()){
-			strength = (float) (1.0/rs.getInt(1));
-			ps = conn.prepareStatement("UPDATE FANOF SET STRENGTH = ? WHERE USERID = ?");
-			ps.setFloat(1, strength);
-			ps.setInt(2, uid);
-		}
-		ps = conn.prepareStatement("INSERT INTO FANOF(USERID, IID, STRENGTH) VALUES(?,?,?)");
+//		float strength = 1;
+//		ps = conn.prepareStatement("SELECT COUNT(IId) FROM FANOF WHERE USERID = ?");
+//		ps.setInt(1, uid);
+//		rs = ps.executeQuery();
+//		if(rs.next()){
+//			strength = (float) (1.0/rs.getInt(1));
+//			ps = conn.prepareStatement("UPDATE FANOF SET STRENGTH = ? WHERE USERID = ?");
+//			ps.setFloat(1, strength);
+//			ps.setInt(2, uid);
+//		}
+		ps = conn.prepareStatement("INSERT INTO FANOF(USERID, IID) VALUES(?,?)");
 		ps.setInt(1, uid);
 		ps.setInt(2, i);
-		ps.setFloat(3, strength);
+//		ps.setFloat(3, strength);
 		ps.execute();
 		ps.close();
 		rs.close();
@@ -785,6 +789,9 @@ public class PennbookSQL {
 		return buf.toString();
 	}
 
+	/*
+	 * Implementation of quick sort algorithm for a provided list from low to high, given a list, minium value of list and size of list
+	 */
 	public void quick_srt(List<Integer> slist,int low, int n){
 		int lo = low;
 		int hi = n;
