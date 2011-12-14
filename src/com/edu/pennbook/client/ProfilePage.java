@@ -25,6 +25,8 @@ public class ProfilePage extends Composite {
 
 		final String userID = Cookies.getCookie("UID");
 
+		// SECTION: USER INFO
+		
 		VerticalPanel userInfoPanel = new VerticalPanel();
 
 		final HTML userTrueName = new HTML();
@@ -41,14 +43,12 @@ public class ProfilePage extends Composite {
 			public void onSuccess(String result) {
 				final String[] helper = result.split(",");
 				userTrueName.setHTML("<strong>" + helper[0] + " " + helper[1] + "</strong>" + spacer);
-				String infoText = "";
 				if (helper.length > 2)
-					infoText = infoText + "affiliated with " + helper[2];
-				if (helper.length > 3)
-					infoText = infoText + "<br>born on " + helper[3];
-				userInfo.setHTML(infoText);
+					userInfo.setHTML("affiliated with " + helper[2]);
 			}
 		});
+		
+		// birthday TODO
 
 		profileService.getUsernameFromUID(profileUserID, new AsyncCallback<String>() {
 			@Override
@@ -68,6 +68,7 @@ public class ProfilePage extends Composite {
 		
 		if (!profileUserID.equals(userID)) {
 			final Button followUser = new Button();
+			followUser.setText("Follow");
 			
 			class followHandler implements ClickHandler {
 				@Override
@@ -91,7 +92,71 @@ public class ProfilePage extends Composite {
 			
 			userInfoPanel.add(followUser);
 		}
+		
+		// (SUB)SECTION: INTERESTS
 
+		final VerticalPanel interestsPanel = new VerticalPanel();
+		HTML interestsTitle = new HTML("<br><br><strong>interested in:</b>");
+		interestsPanel.add(interestsTitle);
+		final TextBox addNewInterest = new TextBox();
+		if (profileUserID.equals(userID)) {
+			interestsPanel.add(addNewInterest);
+		}
+		
+		profileService.getInterestsFromUID(profileUserID, new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// FAIL
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				String[] usersInterestIDs = result.split("\t");
+				for (String interestID : usersInterestIDs) {
+					final HTML interestName = new HTML();
+					profileService.getInterestFromIID(interestID, new AsyncCallback<String>() {
+						@Override
+						public void onFailure(Throwable caught) {
+							// FAIL
+						}
+						@Override
+						public void onSuccess(String result) {
+							interestName.setText(result);
+						}
+					});
+					interestsPanel.add(interestName);
+				}
+			}
+		});
+		
+		class interestHandler implements KeyUpHandler {
+			@Override
+			public void onKeyUp(KeyUpEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					String interestToAdd = addNewInterest.getText();
+					profileService.addInterest(userID, interestToAdd, new AsyncCallback<String>() {
+						@Override
+						public void onFailure(Throwable caught) {
+							// FAIL
+						}
+						@Override
+						public void onSuccess(String result) {
+							// #unnecessary
+						}
+					});
+					HTML newInterest = new HTML(interestToAdd);
+					interestsPanel.add(newInterest);
+				}
+			}
+		}
+		
+		interestHandler iHandler = new interestHandler();
+		addNewInterest.addKeyUpHandler(iHandler);
+		
+		userInfoPanel.add(interestsPanel);
+		
+		// SECTION: POSTS
+		
 		final VerticalPanel postsPanel = new VerticalPanel();
 
 		final TextBox newPostBox = new TextBox();
@@ -160,6 +225,7 @@ public class ProfilePage extends Composite {
 								@Override
 								public void onSuccess(String result) {
 									String[] attributes = result.split(",");
+									if(attributes.length < 2) return;
 									author.setHTML("<br><strong>" + attributes[0] + " " + attributes[1] + "</strong>");
 								}
 							});
@@ -262,6 +328,7 @@ public class ProfilePage extends Composite {
 											@Override
 											public void onSuccess(String commentAuthorAttributes) {
 												final String[] attributes = commentAuthorAttributes.split(",");
+												if (attributes.length < 2) return;
 												
 												profileService.getCommentText(commentID, new AsyncCallback<String>() {
 													@Override
@@ -378,10 +445,12 @@ public class ProfilePage extends Composite {
 				}
 			}
 		});
+		
+		// SECTION: FRIENDS/ FOLLOWING
 
 		final VerticalPanel friendsPanel = new VerticalPanel();
 		
-		HTML title = new HTML(spacer + "<strong>Following:</strong>");
+		HTML title = new HTML(spacer + "<strong>following:</strong>");
 		friendsPanel.add(title);
 		
 		profileService.getFriendsOfUser(profileUserID, new AsyncCallback<String>() {
@@ -404,7 +473,8 @@ public class ProfilePage extends Composite {
 						@Override
 						public void onSuccess(String result) {
 							String[] friendAttributes = result.split(",");
-							HTML friendName = new HTML(friendAttributes[0] + " " + friendAttributes[1]);
+							if (friendAttributes.length < 2) return;
+							HTML friendName = new HTML(spacer + friendAttributes[0] + " " + friendAttributes[1]);
 							
 							class friendHandler implements ClickHandler {
 								@Override

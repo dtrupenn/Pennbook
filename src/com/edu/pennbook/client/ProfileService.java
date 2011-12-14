@@ -40,6 +40,10 @@ public interface ProfileService extends RemoteService {
 
 	String searchForUser(String name);
 	
+	String searchForTag(String tag);
+	
+	String searchForInterest(String interest);
+	
 	String attemptLogin(String username, String password);
 
 	String attemptRegistration(String fname, String lname, String password,
@@ -48,7 +52,7 @@ public interface ProfileService extends RemoteService {
 	String getUserAttributesFromUID(String userID);
 	
 	String changeUserAttributes(String userID, String fname, String lname,
-			String affiliation, String birthday);
+			String affiliation);
 	
 	String getUsernameFromUID(String userID);
 	
@@ -75,4 +79,10 @@ public interface ProfileService extends RemoteService {
 	String getCommentAuthor(String commentID);
 	
 	String getFriendsOfUser(String userID);
+	
+	String addInterest(String userID, String interest);
+	
+	String getInterestFromIID(String interestID);
+	
+	String getInterestsFromUID(String userID);
 }

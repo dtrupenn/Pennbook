@@ -24,13 +24,14 @@ public class SearchBar extends Composite {
 		final Button homepageButton = new Button("Home");
 		final Button profileButton = new Button("Profile");
 		final Button settingsButton = new Button("Settings");
+		final Button logoutButton = new Button("Logout");
 		final Button searchButton = new Button("Go");
 		final TextBox searchField = new TextBox();
-		searchField.setText("Search for friend...");
-		searchField.selectAll();
+		searchField.setText("Search");
 
 		// Focus the cursor on the name field when the app loads
 		searchField.setFocus(true);
+		searchField.selectAll();
 		
 		class homepageHandler implements ClickHandler {
 			public void onClick(ClickEvent event) {
@@ -58,6 +59,17 @@ public class SearchBar extends Composite {
 		
 		settingsHandler seHandler = new settingsHandler();
 		settingsButton.addClickHandler(seHandler);
+		
+		class logoutHandler implements ClickHandler {
+			public void onClick(ClickEvent event) {
+				Cookies.removeCookie("UID");
+				TopPanel.replaceContent(null);
+				ContentPanel.replaceContent(new LoginPage(profileService));
+			}
+		}
+		
+		logoutHandler lHandler = new logoutHandler();
+		logoutButton.addClickHandler(lHandler);
 
 		// Create a handler for the searchButton and searchField
 		class searchHandler implements ClickHandler, KeyUpHandler {
@@ -96,6 +108,7 @@ public class SearchBar extends Composite {
 		searchBarPanel.add(searchField);
 		searchBarPanel.add(searchButton);
 		searchBarPanel.add(settingsButton);
+		searchBarPanel.add(logoutButton);
 		
 		initWidget(searchBarPanel);
 	}

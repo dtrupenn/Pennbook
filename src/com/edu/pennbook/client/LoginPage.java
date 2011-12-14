@@ -105,7 +105,7 @@ public class LoginPage extends Composite {
 				String rUsername = usernameRegiField.getText();
 				String rPassword = passwordRegiField.getText();
 				String rFirstname = firstnameRegiField.getText();
-				String rLastname = firstnameRegiField.getText();
+				String rLastname = lastnameRegiField.getText();
 				
 				regiButton.setEnabled(false);
 				

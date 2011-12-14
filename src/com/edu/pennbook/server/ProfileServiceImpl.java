@@ -1,18 +1,3 @@
-/*
- * Copyright 2011 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.edu.pennbook.server;
 
 import java.sql.SQLException;
@@ -59,7 +44,8 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		int UID = Integer.valueOf(followerID);
 		int FID = Integer.valueOf(followedID);
 		try {
-			psql.addFriend(UID, FID);
+			if (!psql.getFriends(UID).contains(FID))
+				psql.addFriend(UID, FID);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -74,11 +60,47 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 			List<Integer> listOfUserIDs = psql.uSearch(name);
 			for (int userID : listOfUserIDs)
 				userIDs = userIDs + userID + "\t";
+			if (listOfUserIDs.size() > 0)
+				userIDs = userIDs.substring(0, userIDs.length() - 1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
 		return userIDs;
+	}
+	
+	@Override
+	public String searchForTag(String tag) {
+		String messageIDs = "";
+		
+		try {
+			List<Integer> listOfMessageIDs = psql.tSearch(tag);
+			for (int messageID : listOfMessageIDs)
+				messageIDs = messageIDs + messageID + "\t";
+			if (listOfMessageIDs.size() > 0)
+				messageIDs = messageIDs.substring(0, messageIDs.length() - 1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return messageIDs;
+	}
+	
+	@Override
+	public String searchForInterest(String interest) {
+		String interestIDs = "";
+		
+		try {
+			List<Integer> listOfInterestIDs = psql.iSearch(interest);
+			for (int interestID : listOfInterestIDs)
+				interestIDs = interestIDs + interestID + "\t";
+			if (listOfInterestIDs.size() > 0)
+				interestIDs = interestIDs.substring(0, interestIDs.length() - 1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return interestIDs;
 	}
 
 	@Override
@@ -99,9 +121,9 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 
 		// make sure username is in email regex format
 		// case insensitive match to ^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$
-		//Pattern emailRegex = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.+[A-Za-z]");
-		//Matcher emailMatch = emailRegex.matcher(username);
-		//if(!emailMatch.matches()) return "-2"; // error, username is not a valid email address.
+		Pattern emailRegex = Pattern.compile("[A-Za-z0-9\\._-]+@[A-Za-z0-9-\\.]+?\\.[A-Za-z]+");
+		Matcher emailMatch = emailRegex.matcher(username);
+		if(!emailMatch.matches()) return "-2"; // error, username is not a valid email address.
 
 		// ensure username is not already taken
 		boolean usernameNotTaken; 
@@ -113,9 +135,9 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		if(!usernameNotTaken) return "-3"; // error, username is already taken.
 
 		// check password for formatting.. 
-		//Pattern passwordRegex = Pattern.compile("[A-Za-z0-9]");
-		//Matcher passwordMatch = passwordRegex.matcher(password);
-		//if(!passwordMatch.matches()) return "-4"; // error, password may only contain alphanumerics.
+		Pattern passwordRegex = Pattern.compile("[A-Za-z0-9]+");
+		Matcher passwordMatch = passwordRegex.matcher(password);
+		if(!passwordMatch.matches()) return "-4"; // error, password may only contain alphanumerics.
 
 		int newUID = -1;
 
@@ -129,8 +151,9 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		return String.valueOf(newUID);
 	}
 	
-	// returns string of comma delineated first name, lastname, affiliation, bday.
+	// returns string of comma delineated first name, lastname, affiliation.
 	public String getUserAttributesFromUID(String userID) {
+		if (userID.equals("")) return "";
 		String userAttributes = "";
 		int UID = Integer.valueOf(userID);
 		try {
@@ -139,23 +162,15 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 			if (psql.getAffiliation(UID) != null) {
 				userAttributes = userAttributes + "," + psql.getAffiliation(UID);
 			}
-			if (psql.getBDay(UID) != null) {
-				Timestamp birthday = psql.getBDay(UID); 
-				if (birthday.toString() != null) {
-					String[] part1 = birthday.toString().split(" ");
-					String[] part2 = part1[0].split("-"); // format: yyyy, mm, dd
-					userAttributes = userAttributes + "," + part2[1] + "/" + part2[2] + "/" + part2[0];
-				} 
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return userAttributes;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public String changeUserAttributes(String userID, String fname, String lname,
-			String affiliation, String birthday) {
+			String affiliation) {
+		if (userID.equals("")) return "";
 		int UID = Integer.valueOf(userID);
 		try { // if it is not the current fname/lname/aff/bday... update it!
 			String currFname = psql.getFirstName(UID);
@@ -165,17 +180,8 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 			if (!currLname.equals(lname) && !lname.equals(""))
 				psql.updateLastName(UID, lname);
 			String currAff = psql.getAffiliation(UID);
-			if (currAff == null || !currAff.equals(affiliation))
+			if ((currAff == null || !currAff.equals(affiliation)) && !affiliation.equals(""))
 				psql.updateAffiliation(UID, affiliation);
-			String[] parts = birthday.split("/");
-			if (parts.length == 3) {
-				Timestamp bday = new Timestamp(Integer.valueOf(parts[2]), Integer.valueOf(parts[1]), Integer.valueOf(parts[0]), 0, 0, 0, 0);
-				if (psql.getBDay(UID) != null)
-					if(!psql.getBDay(UID).toString().equals(bday.toString()))
-						psql.updateBDay(UID, bday);
-				else
-					psql.updateBDay(UID, bday);
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -183,6 +189,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	public String getUsernameFromUID(String userID) {
+		if (userID.equals("")) return "";
 		int UID = Integer.valueOf(userID);
 		String email = "";
 		try {
@@ -194,12 +201,15 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	public String getHomepagePostsFromUID(String userID) {
+		if (userID.equals("")) return "";
 		int UID = Integer.valueOf(userID);
 		String homepagePosts = "";
 		try {
 			List<Integer> homePageIds = psql.getWallPosts(UID);
 			for(int i: homePageIds)
 				homepagePosts = homepagePosts + i + "\t";
+			if (homePageIds.size() > 0)
+				homepagePosts = homepagePosts.substring(0, homepagePosts.length() - 1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -208,12 +218,15 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	public String getProfilePostsFromUID(String userID) {
+		if (userID.equals("")) return "";
 		int UID = Integer.valueOf(userID);
 		String profilePosts = "";
 		try {
 			List<Integer> profilePageIds = psql.getWallPosts(UID);
 			for(int i: profilePageIds)
 				profilePosts = profilePosts + i + "\t";
+			if (profilePageIds.size() > 0)
+				profilePosts = profilePosts.substring(0, profilePosts.length()-2);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -250,6 +263,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	public String getMessageText(String messageID) {
+		if (messageID.equals("")) return "";
 		int MID = Integer.valueOf(messageID);
 		String messageText = "";
 		try {
@@ -261,6 +275,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	public String getCommentText(String commentID) {
+		if (commentID.equals("")) return "";
 		int CID = Integer.valueOf(commentID);
 		String commentText = "";
 		try {
@@ -272,6 +287,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	public String getCommentAuthor(String commentID) {
+		if (commentID.equals("")) return "";
 		int CID = Integer.valueOf(commentID);
 		int FID = 0;
 		try {
@@ -283,6 +299,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	public String getMessageAuthor(String messageID) {
+		if (messageID.equals("")) return "";
 		int MID = Integer.valueOf(messageID);
 		int FID = 0;
 		try {
@@ -294,6 +311,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	public String getNumberOfLikes(String messageID) {
+		if (messageID.equals("")) return "";
 		int MID = Integer.valueOf(messageID);
 		int numLikes = 0;
 		try {
@@ -321,28 +339,77 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 	}
 	
 	public String getCommentsOnMessage(String messageID) {
+		if (messageID.equals("")) return "";
 		int MID = Integer.valueOf(messageID);
 		String commentIDs = "";
 		try {
 			List<Integer> listOfCmts = psql.getMsgComments(MID);
 			for (Integer i : listOfCmts)
 				commentIDs = commentIDs + i + "\t";
+			if (listOfCmts.size() > 0)
+				commentIDs = commentIDs.substring(0, commentIDs.length() - 1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return commentIDs;
 	}
 
+	// gets the IDs of the users that the user with given user ID follows
 	public String getFriendsOfUser(String userID) {
+		if (userID.equals("")) return "";
 		int UID = Integer.valueOf(userID);
 		String allFriends = "";	
 		try {
 			List<Integer> listOfFriendIDs = psql.getFriends(UID);
 			for (int friendID : listOfFriendIDs)
 				allFriends = allFriends + friendID + "\t";
+			if (listOfFriendIDs.size() > 0)
+				allFriends = allFriends.substring(0, allFriends.length() - 1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return allFriends;
+	}
+	
+	public String addInterest(String userID, String interest) {
+		int UID = Integer.valueOf(userID);
+		int IID = 0;
+		try {
+			IID = psql.addInterest(UID, interest);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return IID + "";
+	}
+	
+	public String getInterestFromIID(String interestID) {
+		if (interestID.equals("")) return "";
+		int IID = Integer.valueOf(interestID);
+		String interest = "";
+		
+		try {
+			interest = psql.getInterestValue(IID);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return interest;
+	}
+	
+	public String getInterestsFromUID(String userID) {
+		int UID = Integer.valueOf(userID);
+		String interestIDs = "";
+		
+		try {
+			List<Integer> listOfInterestIDs = psql.getInterests(UID);
+			for (int interestID : listOfInterestIDs)
+				interestIDs = interestIDs + interestID + "\t";
+			if (listOfInterestIDs.size() > 0)
+				interestIDs = interestIDs.substring(0, interestIDs.length() - 1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return interestIDs;
 	}
 }

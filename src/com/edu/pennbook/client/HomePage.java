@@ -165,6 +165,7 @@ public class HomePage extends Composite {
 											@Override
 											public void onSuccess(String commentAuthorAttributes) {
 												final String[] attributes = commentAuthorAttributes.split(",");
+												if (attributes.length < 2) return;
 												
 												profileService.getCommentText(commentID, new AsyncCallback<String>() {
 													@Override

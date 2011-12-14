@@ -9,6 +9,10 @@ public interface ProfileServiceAsync {
 	void followUser(String followerID, String followedID, AsyncCallback<String> callback);
 	
 	void searchForUser(String input, AsyncCallback<String> callback);
+	
+	void searchForTag(String tag, AsyncCallback<String> callback);
+	
+	void searchForInterest(String interest, AsyncCallback<String> callback);
 
 	void attemptLogin(String username, String password, AsyncCallback<String> callback);
 	
@@ -18,7 +22,7 @@ public interface ProfileServiceAsync {
 	void getUserAttributesFromUID(String userID, AsyncCallback<String> callback);
 	
 	void changeUserAttributes(String userID, String fname, String lname,
-			String affiliation, String birthday, AsyncCallback<String> callback);
+			String affiliation, AsyncCallback<String> callback);
 	
 	void getUsernameFromUID(String userID, AsyncCallback<String> callback);
 	
@@ -45,4 +49,10 @@ public interface ProfileServiceAsync {
 	void getCommentAuthor(String commentID, AsyncCallback<String> asyncCallback);
 	
 	void getFriendsOfUser(String userID, AsyncCallback<String> asyncCallback);
+	
+	void addInterest(String userID, String interest, AsyncCallback<String> asyncCallback);
+	
+	void getInterestFromIID(String interestID, AsyncCallback<String> asyncCallback);
+	
+	void getInterestsFromUID(String userID, AsyncCallback<String> asyncCallback);
 }

@@ -73,10 +73,9 @@ public class SettingsPage extends Composite {
 				String fname = firstNameBox.getText();
 				String lname = lastNameBox.getText();
 				String aff = affiliationBox.getText();
-				String bday = birthdayBox.getText(); // make sure this is date/month/year format... drop downs?
-				String[] bdayParts = bday.split("/");
-				bday = bdayParts[1] + "/" + bdayParts[0] + "/" + bdayParts[2];
-				profileService.changeUserAttributes(userID, fname, lname, aff, bday, new AsyncCallback<String>() {
+				// TODO: String bday = birthdayBox.getText();
+				
+				profileService.changeUserAttributes(userID, fname, lname, aff, new AsyncCallback<String>() {
 					@Override
 					public void onFailure(Throwable caught) {
 						settingsFail.setText("Changing settings failed, please try again.");

@@ -19,8 +19,10 @@ public class TopPanel extends VerticalPanel {
   public static void replaceContent(Widget widget) { 
 	  // remove all current children
 	  INSTANCE.clear();
-	  // create new content panel with widget.
-	  INSTANCE.add(widget); 
+	  if (widget != null) {
+		  // create new content panel with widget.
+		  INSTANCE.add(widget); 
+	  }
   }
 
 } 
