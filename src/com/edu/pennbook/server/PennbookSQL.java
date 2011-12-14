@@ -211,6 +211,16 @@ public class PennbookSQL {
 			is.add(rs.getInt(1));
 		return is;
 	}
+	
+	//Returns the interest string from provided iid, else returns null
+	public String getInterestValue(int iid) throws SQLException{
+		String i = null;
+		ps = conn.prepareStatement("SELECT INTEREST FROM INTEREST WHERE IID = ?");
+		ps.setInt(1, iid);
+		if(rs.next())
+			i = rs.getString(1);
+		return i;
+	}
 
 	//Returns all of the user's interests
 	public String getUsername(int uid) throws SQLException{

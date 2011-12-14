@@ -1,16 +1,38 @@
 package com.edu.pennbook.client;
 
+import com.edu.pennbook.server.ProfileServiceImpl;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 
-public class FriendVisualization {
+public class FriendVisualization extends Composite{
 
+	public FriendVisualization(final ProfileServiceAsync profileService){
+		final String userID = Cookies.getCookie("UID");
+		
+		
+		profileService.getFriendsOfUser(userID, AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// FAIL
+			}
 
+			@Override
+			public void onSuccess(String result) {
+				String[] allPosts = result.split("\t");
+				if (allPosts.length == 0) return;
+
+				String[] allPostsReversed = new String[allPosts.length];
+				for (int i = allPosts.length; i > 0; i--) {
+					allPostsReversed[i-1] = allPosts[allPosts.length - i];
+				})
+	}
 
 
 	public void drawNodeAndNeighbors(String text){
-		final String t = text;
-		ProfileServiceImpl
+		final String t = text; 
 	}
 
 
