@@ -31,6 +31,7 @@ public class ProfilePage extends Composite {
 
 		final HTML userTrueName = new HTML();
 		final HTML userInfo = new HTML();
+		final HTML userBday = new HTML();
 		final HTML userEmailAddress = new HTML();
 
 		profileService.getUserAttributesFromUID(profileUserID, new AsyncCallback<String>() {
@@ -48,7 +49,18 @@ public class ProfilePage extends Composite {
 			}
 		});
 		
-		// birthday TODO
+		profileService.getBirthdayFromUID(userID, new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// FAIL
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				if (result != null)
+					userBday.setHTML("born on " + result);
+			}
+		});
 
 		profileService.getUsernameFromUID(profileUserID, new AsyncCallback<String>() {
 			@Override
@@ -65,6 +77,7 @@ public class ProfilePage extends Composite {
 		userInfoPanel.add(userTrueName);
 		userInfoPanel.add(userEmailAddress);
 		userInfoPanel.add(userInfo);
+		userInfoPanel.add(userBday);
 		
 		if (!profileUserID.equals(userID)) {
 			final Button followUser = new Button();

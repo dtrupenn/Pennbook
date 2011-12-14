@@ -204,7 +204,7 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		int UID = Integer.valueOf(userID);
 		String homepagePosts = "";
 		try {
-			List<Integer> homePageIds = psql.getWallPosts(UID);
+			List<Integer> homePageIds = psql.getHomepagePosts(UID);
 			for(int i: homePageIds)
 				homepagePosts = homepagePosts + i + "\t";
 			if (homePageIds.size() > 0)
@@ -410,5 +410,35 @@ public class ProfileServiceImpl extends RemoteServiceServlet implements ProfileS
 		}
 		
 		return interestIDs;
+	}
+	
+	public String getBirthdayFromUID(String userID) {
+		int UID = Integer.valueOf(userID);
+		String birthday = "";
+		
+		try {
+			birthday = psql.getBDay(UID);
+			if (birthday != null && birthday.length() > 10) 
+				birthday = birthday.substring(0, 10);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return birthday;
+	}
+	
+	public String updateBirthdayFromUID(String userID, String birthday) {
+		int UID = Integer.valueOf(userID);
+		
+		Pattern bdayRegex = Pattern.compile("[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]");
+		Matcher bdayMatch = bdayRegex.matcher(birthday);
+		if(!bdayMatch.matches()) return "-1";
+		
+		try {
+			psql.updateBDay(UID, birthday);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return birthday;
 	}
 }

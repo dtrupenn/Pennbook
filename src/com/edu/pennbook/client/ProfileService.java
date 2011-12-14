@@ -85,4 +85,8 @@ public interface ProfileService extends RemoteService {
 	String getInterestFromIID(String interestID);
 	
 	String getInterestsFromUID(String userID);
+	
+	String getBirthdayFromUID(String userID);
+	
+	String updateBirthdayFromUID(String userID, String birthday);
 }

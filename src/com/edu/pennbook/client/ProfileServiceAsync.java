@@ -55,4 +55,8 @@ public interface ProfileServiceAsync {
 	void getInterestFromIID(String interestID, AsyncCallback<String> asyncCallback);
 	
 	void getInterestsFromUID(String userID, AsyncCallback<String> asyncCallback);
+	
+	void getBirthdayFromUID(String userID, AsyncCallback<String> asyncCallback);
+	
+	void updateBirthdayFromUID(String userID, String birthday, AsyncCallback<String> asyncCallback);
 }

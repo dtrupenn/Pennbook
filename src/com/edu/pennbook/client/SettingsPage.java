@@ -46,8 +46,17 @@ public class SettingsPage extends Composite {
 				lastNameBox.setText(helper[1]);
 				if (helper.length > 2)
 					affiliationBox.setText(helper[2]);
-				if (helper.length > 3)
-					birthdayBox.setText(helper[3]);
+				profileService.getBirthdayFromUID(userID, new AsyncCallback<String>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						// FAIL
+					}
+					@Override
+					public void onSuccess(String result) {
+						if (result != null)
+							birthdayBox.setText(result);
+					}
+				});
 			}
 		});
 		
@@ -73,7 +82,7 @@ public class SettingsPage extends Composite {
 				String fname = firstNameBox.getText();
 				String lname = lastNameBox.getText();
 				String aff = affiliationBox.getText();
-				// TODO: String bday = birthdayBox.getText();
+				final String bday = birthdayBox.getText();
 				
 				profileService.changeUserAttributes(userID, fname, lname, aff, new AsyncCallback<String>() {
 					@Override
@@ -88,6 +97,19 @@ public class SettingsPage extends Composite {
 							settingsFail.setText("Changing settings failed, please try again.");
 							settingsFail.center();
 						}
+						
+						profileService.updateBirthdayFromUID(userID, bday, new AsyncCallback<String>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								// FAIL
+							}
+							
+							@Override
+							public void onSuccess(String result) {
+								// nothing haha
+							}
+						});
+						
 						ContentPanel.replaceContent(new SettingsPage(profileService));
 					}
 				});
