@@ -15,7 +15,7 @@ public class test {
 		PennbookSQL psql = new PennbookSQL();
 		try {
 			psql.startup();
-			System.out.println(psql.getHomepagePosts(1));
+			System.out.println(psql.tSearch("m"));
 			psql.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

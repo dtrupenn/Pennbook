@@ -707,7 +707,7 @@ public class PennbookSQL {
 	 */
 	public List<Integer> tSearch(String s) throws SQLException{
 		List<Integer> results = new LinkedList<Integer>();
-		ps = conn.prepareStatement("SELECT MSGID FROM HASHTAG WHERE TAG LIKE ?");
+		ps = conn.prepareStatement("SELECT MSGID FROM (SELECT TAGID FROM HASHTAG WHERE TAG LIKE ?) AS HT LEFT JOIN HASA AS HA ON HT.TAGID = HA.TAGID");
 		ps.setString(1, s + "%");
 		rs = ps.executeQuery();
 		while(rs.next())
