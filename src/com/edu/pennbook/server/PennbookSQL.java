@@ -25,7 +25,7 @@ public class PennbookSQL {
 			//This will load the MySQL driver
 			Class.forName("com.mysql.jdbc.Driver");
 			//Setup the connection with the DB
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/Pennbook?user=PENNBOOK&password=pennbook");			
+			conn = DriverManager.getConnection("jdbc:mysql://10.220.194.91:3306/Pennbook?user=PENNBOOK&password=pennbook");			
 		}
 		catch (Exception e){
 			throw e;
@@ -553,6 +553,7 @@ public class PennbookSQL {
 			ps.setString(5, pword);
 			ps.execute();
 			ps.close();
+			postMsg(newid, newid, fname + "just created a Pennbook account! =D");
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
